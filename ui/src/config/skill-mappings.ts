@@ -4,6 +4,8 @@
  * 用于将后端 OpenClaw Skills 映射到前端展示的分类、样式和交互行为
  */
 
+import type { SkillStatusEntry } from "../ui/types";
+
 // 技能分类定义
 export type SkillCategory =
   | "campaign" // 营销活动策划
@@ -253,11 +255,15 @@ export function findSkillMapping(skillKey: string): SkillMappingEntry | undefine
   );
 }
 
+// 带类型映射的 Skill 条目
+export type SkillWithMapping = {
+  skill: SkillStatusEntry;
+  mapping: SkillMappingEntry;
+};
+
 // 筛选出 Marketing 相关的 Skills
-export function filterMarketingSkills(
-  allSkills: Array<{ skillKey: string }>,
-): Array<{ skill: any; mapping: SkillMappingEntry }> {
-  const results: Array<{ skill: any; mapping: SkillMappingEntry }> = [];
+export function filterMarketingSkills(allSkills: SkillStatusEntry[]): SkillWithMapping[] {
+  const results: SkillWithMapping[] = [];
 
   for (const skill of allSkills) {
     const mapping = findSkillMapping(skill.skillKey);
@@ -274,9 +280,9 @@ export function filterMarketingSkills(
 
 // 按分类组织 Skills
 export function groupSkillsByCategory(
-  skillsWithMapping: Array<{ skill: any; mapping: SkillMappingEntry }>,
-): Record<SkillCategory, Array<{ skill: any; mapping: SkillMappingEntry }>> {
-  const groups: Record<string, Array<any>> = {
+  skillsWithMapping: SkillWithMapping[],
+): Record<SkillCategory, SkillWithMapping[]> {
+  const groups: Partial<Record<SkillCategory, SkillWithMapping[]>> = {
     campaign: [],
     content: [],
     analyze: [],
@@ -287,8 +293,29 @@ export function groupSkillsByCategory(
 
   for (const item of skillsWithMapping) {
     const category = item.mapping.category;
-    groups[category].push(item);
+    // 验证分类是否有效
+    if (!(category in groups)) {
+      console.warn(`Unknown skill category: ${category}, using "other"`);
+      groups.other ??= [];
+      groups.other.push(item);
+    } else {
+      groups[category]!.push(item);
+    }
   }
 
-  return groups as Record<SkillCategory, Array<{ skill: any; mapping: SkillMappingEntry }>>;
+  // 确保所有分类都有数组（即使是空数组）
+  for (const cat of [
+    "campaign",
+    "content",
+    "analyze",
+    "optimize",
+    "automation",
+    "other",
+  ] as SkillCategory[]) {
+    if (!groups[cat]) {
+      groups[cat] = [];
+    }
+  }
+
+  return groups as Record<SkillCategory, SkillWithMapping[]>;
 }

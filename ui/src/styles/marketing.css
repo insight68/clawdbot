@@ -253,6 +253,16 @@
     0 8px 24px rgba(59, 130, 246, 0.2) !important;
 }
 
+/* ========== Focus 状态（键盘导航） ========== */
+
+.skill-card--primary:focus,
+.skill-card--secondary:focus,
+.skill-card--accent:focus,
+.skill-card--subtle:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ========== 加载状态 ========== */
 
 .skill-card--loading {
@@ -331,5 +341,23 @@
 
   .skill-card--large .skill-description {
     font-size: 0.8125rem;
+  }
+}
+
+/* ========== 减少动画偏好 ========== */
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card--primary,
+  .skill-card--secondary,
+  .skill-card--accent,
+  .skill-card--subtle {
+    transition: none;
+  }
+
+  .skill-card--primary:hover,
+  .skill-card--secondary:hover,
+  .skill-card--accent:hover,
+  .skill-card--subtle:hover {
+    transform: none;
   }
 }

@@ -6,6 +6,7 @@ import {
   filterMarketingSkills,
   groupSkillsByCategory,
   type SkillMappingEntry,
+  type SkillWithMapping,
 } from "../../config/skill-mappings";
 import { appContext } from "../app";
 
@@ -212,6 +213,12 @@ export class MarketingView extends LitElement {
     this.loadSkills();
   }
 
+  disconnectedCallback(): void {
+    // 取消任何挂起的操作
+    this.loading = false;
+    super.disconnectedCallback();
+  }
+
   private async loadSkills() {
     try {
       this.loading = true;
@@ -239,9 +246,9 @@ export class MarketingView extends LitElement {
         this.dispatchEvent(
           new CustomEvent("inject-prompt", {
             detail: {
-              prompt,
+              prompt: prompt ?? "",
               skillKey: skill.skillKey,
-              displayName: mapping.displayName ?? skill.name,
+              displayName: mapping.displayName ?? skill.name ?? "未命名技能",
             },
             bubbles: true,
             composed: true,
@@ -274,8 +281,8 @@ export class MarketingView extends LitElement {
   private renderSkillCard(skill: SkillStatusEntry, mapping: SkillMappingEntry) {
     const { visual, interaction } = mapping;
     const { variant, size, icon } = visual;
-    const displayName = mapping.displayName ?? skill.name;
-    const description = mapping.description ?? skill.description;
+    const displayName = mapping.displayName ?? skill.name ?? "未命名技能";
+    const description = mapping.description ?? skill.description ?? "暂无描述";
     const isSelected = this.selectedSkillKey === skill.skillKey;
 
     // 生成卡片类名
@@ -327,7 +334,7 @@ export class MarketingView extends LitElement {
       sparkles: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`,
       barChart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-6"/></svg>`,
       target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
-      mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+      mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12 13 2,6"/></svg>`,
       share: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
       penTool: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>`,
       users: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
