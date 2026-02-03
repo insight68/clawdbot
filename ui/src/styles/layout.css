@@ -148,6 +148,11 @@
   line-height: 1;
 }
 
+.brand-sub-accent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* Topbar status */
 .topbar-status {
   display: flex;

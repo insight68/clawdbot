@@ -59,7 +59,7 @@ const TAB_PATHS: Record<Tab, string> = {
   // 主导航
   home: "/home",
   statistics: "/statistics",
-  docs: "https://docs.yongxian.xyz",
+  docs: "/docs",
   "ai-assistant": "/ai-assistant",
   // AI助手子页面
   marketing: "/marketing",

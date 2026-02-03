@@ -136,7 +136,7 @@ export function renderApp(state: AppViewState) {
             </div>
             <div class="brand-text">
               <div class="brand-title">YongXian.xyz</div>
-              <div class="brand-sub">涌现AI助理工作台</div>
+              <div class="brand-sub">涌现<span class="brand-sub-accent">AI工作台</span></div>
             </div>
           </div>
         </div>
