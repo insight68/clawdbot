@@ -1,39 +1,79 @@
 import type { IconName } from "./icons.js";
 
+// Tab 分组定义 - 用于导航区域的分组显示
 export const TAB_GROUPS = [
-  { label: "Chat", tabs: ["chat"] },
   {
-    label: "Control",
-    tabs: ["overview", "channels", "instances", "sessions", "cron"],
+    label: "",
+    tabs: ["home"],
   },
-  { label: "Agent", tabs: ["skills", "nodes"] },
-  { label: "Settings", tabs: ["config", "debug", "logs"] },
+  {
+    label: "",
+    tabs: ["statistics"],
+  },
+  {
+    label: "",
+    tabs: ["docs"],
+  },
+  {
+    label: "AI助理",
+    tabs: [
+      "marketing",
+      "data-processing",
+      "market-analysis",
+      "customer-service",
+      "brand-management",
+      "sentiment-monitor",
+    ],
+    subtabs: true,
+  },
+  {
+    label: "配置",
+    tabs: ["config", "channels", "instances", "sessions", "skills", "logs"],
+    subtabs: true,
+    collapsed: true,
+  },
 ] as const;
 
 export type Tab =
-  | "overview"
+  // 主导航
+  | "home"
+  | "statistics"
+  | "docs"
+  | "ai-assistant"
+  // AI助手子页面
+  | "marketing"
+  | "data-processing"
+  | "market-analysis"
+  | "customer-service"
+  | "brand-management"
+  | "sentiment-monitor"
+  // 保留现有功能
   | "channels"
   | "instances"
   | "sessions"
-  | "cron"
   | "skills"
-  | "nodes"
-  | "chat"
   | "config"
-  | "debug"
   | "logs";
 
 const TAB_PATHS: Record<Tab, string> = {
-  overview: "/overview",
+  // 主导航
+  home: "/home",
+  statistics: "/statistics",
+  docs: "https://docs.yongxian.xyz",
+  "ai-assistant": "/ai-assistant",
+  // AI助手子页面
+  marketing: "/marketing",
+  "data-processing": "/data-processing",
+  "market-analysis": "/market-analysis",
+  "customer-service": "/customer-service",
+  "brand-management": "/brand-management",
+  "sentiment-monitor": "/sentiment-monitor",
+  // 保留现有功能
   channels: "/channels",
   instances: "/instances",
   sessions: "/sessions",
-  cron: "/cron",
   skills: "/skills",
-  nodes: "/nodes",
-  chat: "/chat",
   config: "/config",
-  debug: "/debug",
   logs: "/logs",
 };
 
@@ -61,6 +101,10 @@ export function normalizePath(path: string): string {
 export function pathForTab(tab: Tab, basePath = ""): string {
   const base = normalizeBasePath(basePath);
   const path = TAB_PATHS[tab];
+  // 如果是外部 URL，直接返回，不拼接 basePath
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
   return base ? `${base}${path}` : path;
 }
 
@@ -76,7 +120,7 @@ export function tabFromPath(pathname: string, basePath = ""): Tab | null {
   }
   let normalized = normalizePath(path).toLowerCase();
   if (normalized.endsWith("/index.html")) normalized = "/";
-  if (normalized === "/") return "chat";
+  if (normalized === "/") return "home";
   return PATH_TO_TAB.get(normalized) ?? null;
 }
 
@@ -100,26 +144,39 @@ export function inferBasePathFromPathname(pathname: string): string {
 
 export function iconForTab(tab: Tab): IconName {
   switch (tab) {
-    case "chat":
-      return "messageSquare";
-    case "overview":
+    // 主导航
+    case "home":
+      return "home";
+    case "statistics":
       return "barChart";
+    case "docs":
+      return "book";
+    case "ai-assistant":
+      return "bot";
+    // AI助手子页面
+    case "marketing":
+      return "megaphone";
+    case "data-processing":
+      return "database";
+    case "market-analysis":
+      return "trendingUp";
+    case "customer-service":
+      return "headphones";
+    case "brand-management":
+      return "palette";
+    case "sentiment-monitor":
+      return "eye";
+    // 保留现有功能
     case "channels":
       return "link";
     case "instances":
       return "radio";
     case "sessions":
       return "fileText";
-    case "cron":
-      return "loader";
     case "skills":
       return "zap";
-    case "nodes":
-      return "monitor";
     case "config":
       return "settings";
-    case "debug":
-      return "bug";
     case "logs":
       return "scrollText";
     default:
@@ -129,57 +186,83 @@ export function iconForTab(tab: Tab): IconName {
 
 export function titleForTab(tab: Tab) {
   switch (tab) {
-    case "overview":
-      return "Overview";
+    // 主导航
+    case "home":
+      return "首页";
+    case "statistics":
+      return "统计";
+    case "docs":
+      return "文档";
+    case "ai-assistant":
+      return "AI助理";
+    // AI助手子页面
+    case "marketing":
+      return "营销";
+    case "data-processing":
+      return "数据处理";
+    case "market-analysis":
+      return "市场分析";
+    case "customer-service":
+      return "客户服务";
+    case "brand-management":
+      return "品牌管理";
+    case "sentiment-monitor":
+      return "舆情监控";
+    // 保留现有功能
     case "channels":
-      return "Channels";
+      return "频道";
     case "instances":
-      return "Instances";
+      return "实例";
     case "sessions":
-      return "Sessions";
-    case "cron":
-      return "Cron Jobs";
+      return "会话";
     case "skills":
-      return "Skills";
-    case "nodes":
-      return "Nodes";
-    case "chat":
-      return "Chat";
+      return "技能";
     case "config":
-      return "Config";
-    case "debug":
-      return "Debug";
+      return "配置";
     case "logs":
-      return "Logs";
+      return "日志";
     default:
-      return "Control";
+      return "控制";
   }
 }
 
 export function subtitleForTab(tab: Tab) {
   switch (tab) {
-    case "overview":
-      return "Gateway status, entry points, and a fast health read.";
+    // 主导航
+    case "home":
+      return "欢迎回来，这里是您的工作空间";
+    case "statistics":
+      return "消息统计和工具调用分析";
+    case "docs":
+      return "查看完整的使用文档和 API 参考";
+    case "ai-assistant":
+      return "选择专业的 AI 助手来帮助您";
+    // AI助手子页面
+    case "marketing":
+      return "营销活动策划、内容生成和效果分析";
+    case "data-processing":
+      return "数据处理、清洗和转换工具";
+    case "market-analysis":
+      return "市场趋势分析和竞争情报";
+    case "customer-service":
+      return "客户支持和问题解决方案";
+    case "brand-management":
+      return "品牌策略和形象管理";
+    case "sentiment-monitor":
+      return "舆情监测和声誉管理";
+    // 保留现有功能
     case "channels":
-      return "Manage channels and settings.";
+      return "管理频道和相关设置";
     case "instances":
-      return "Presence beacons from connected clients and nodes.";
+      return "已连接客户端和节点的状态信标";
     case "sessions":
-      return "Inspect active sessions and adjust per-session defaults.";
-    case "cron":
-      return "Schedule wakeups and recurring agent runs.";
+      return "检查活动会话并调整会话默认值";
     case "skills":
-      return "Manage skill availability and API key injection.";
-    case "nodes":
-      return "Paired devices, capabilities, and command exposure.";
-    case "chat":
-      return "Direct gateway chat session for quick interventions.";
+      return "管理技能可用性和 API 密钥注入";
     case "config":
-      return "Edit ~/.openclaw/openclaw.json safely.";
-    case "debug":
-      return "Gateway snapshots, events, and manual RPC calls.";
+      return "安全编辑 ~/.openclaw/openclaw.json";
     case "logs":
-      return "Live tail of the gateway file logs.";
+      return "实时查看网关文件日志";
     default:
       return "";
   }

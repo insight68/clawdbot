@@ -132,11 +132,11 @@ export function renderApp(state: AppViewState) {
           </button>
           <div class="brand">
             <div class="brand-logo">
-              <img src="/favicon.svg" alt="OpenClaw" />
+              <img src="/favicon-192.png" alt="涌现YongXian.xyz" />
             </div>
             <div class="brand-text">
-              <div class="brand-title">OPENCLAW</div>
-              <div class="brand-sub">Gateway Dashboard</div>
+              <div class="brand-title">YongXian.xyz</div>
+              <div class="brand-sub">涌现AI助理工作台</div>
             </div>
           </div>
         </div>
@@ -153,46 +153,36 @@ export function renderApp(state: AppViewState) {
         ${TAB_GROUPS.map((group) => {
           const isGroupCollapsed = state.settings.navGroupsCollapsed[group.label] ?? false;
           const hasActiveTab = group.tabs.some((tab) => tab === state.tab);
+          const hasLabel = group.label !== "";
           return html`
             <div class="nav-group ${isGroupCollapsed && !hasActiveTab ? "nav-group--collapsed" : ""}">
-              <button
-                class="nav-label"
-                @click=${() => {
-                  const next = { ...state.settings.navGroupsCollapsed };
-                  next[group.label] = !isGroupCollapsed;
-                  state.applySettings({
-                    ...state.settings,
-                    navGroupsCollapsed: next,
-                  });
-                }}
-                aria-expanded=${!isGroupCollapsed}
-              >
-                <span class="nav-label__text">${group.label}</span>
-                <span class="nav-label__chevron">${isGroupCollapsed ? "+" : "−"}</span>
-              </button>
+              ${
+                hasLabel
+                  ? html`
+                <button
+                  class="nav-label"
+                  @click=${() => {
+                    const next = { ...state.settings.navGroupsCollapsed };
+                    next[group.label] = !isGroupCollapsed;
+                    state.applySettings({
+                      ...state.settings,
+                      navGroupsCollapsed: next,
+                    });
+                  }}
+                  aria-expanded=${!isGroupCollapsed}
+                >
+                  <span class="nav-label__text">${group.label}</span>
+                  <span class="nav-label__chevron">${isGroupCollapsed ? "+" : "−"}</span>
+                </button>
+              `
+                  : nothing
+              }
               <div class="nav-group__items">
                 ${group.tabs.map((tab) => renderTab(state, tab))}
               </div>
             </div>
           `;
         })}
-        <div class="nav-group nav-group--links">
-          <div class="nav-label nav-label--static">
-            <span class="nav-label__text">Resources</span>
-          </div>
-          <div class="nav-group__items">
-            <a
-              class="nav-item nav-item--external"
-              href="https://docs.openclaw.ai"
-              target="_blank"
-              rel="noreferrer"
-              title="Docs (opens in new tab)"
-            >
-              <span class="nav-item__icon" aria-hidden="true">${icons.book}</span>
-              <span class="nav-item__text">Docs</span>
-            </a>
-          </div>
-        </div>
       </aside>
       <main class="content ${isChat ? "content--chat" : ""}">
         <section class="content-header">
@@ -552,6 +542,70 @@ export function renderApp(state: AppViewState) {
                 onApply: () => applyConfig(state),
                 onUpdate: () => runUpdate(state),
               })
+            : nothing
+        }
+
+        ${
+          state.tab === "home"
+            ? html`
+                <openclaw-view-home></openclaw-view-home>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "statistics"
+            ? html`
+                <openclaw-view-statistics></openclaw-view-statistics>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "marketing"
+            ? html`
+                <openclaw-view-marketing></openclaw-view-marketing>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "data-processing"
+            ? html`
+                <openclaw-view-data-processing></openclaw-view-data-processing>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "market-analysis"
+            ? html`
+                <openclaw-view-market-analysis></openclaw-view-market-analysis>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "customer-service"
+            ? html`
+                <openclaw-view-customer-service></openclaw-view-customer-service>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "brand-management"
+            ? html`
+                <openclaw-view-brand-management></openclaw-view-brand-management>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "sentiment-monitor"
+            ? html`
+                <openclaw-view-sentiment-monitor></openclaw-view-sentiment-monitor>
+              `
             : nothing
         }
 

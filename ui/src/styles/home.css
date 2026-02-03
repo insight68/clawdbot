@@ -1,0 +1,388 @@
+/**
+ * Home Page Styles
+ *
+ * 大气简洁的首页样式设计
+ */
+
+/* ========== 首页容器 ========== */
+.home-container {
+  padding: var(--space-3xl) var(--space-2xl);
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fade-slide-up 0.6s var(--ease-out);
+}
+
+.home-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--muted);
+  font-family: var(--font-body);
+}
+
+/* ========== 欢迎区域 ========== */
+.welcome-section {
+  margin-bottom: var(--space-3xl);
+  animation: rise 0.6s var(--ease-out);
+}
+
+.welcome-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0 0 var(--space-sm) 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.welcome-subtitle {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ========== 进度卡片区域 ========== */
+.progress-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-3xl);
+}
+
+@media (max-width: 768px) {
+  .progress-section {
+    grid-template-columns: 1fr;
+  }
+
+  .home-container {
+    padding: var(--space-xl) var(--space-md);
+  }
+}
+
+.stat-card {
+  background: var(--card);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin-bottom: var(--space-xs);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* ========== 待办事项区域 ========== */
+.todos-section {
+  background: var(--card);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: var(--space-3xl);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-strong);
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-link {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.section-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+}
+
+.todo-item:hover {
+  background: var(--bg-hover);
+}
+
+.todo-item:last-child {
+  margin-bottom: 0;
+}
+
+.todo-item.done {
+  opacity: 0.6;
+}
+
+.todo-item.done .todo-text {
+  text-decoration: line-through;
+}
+
+.todo-item input[type="checkbox"] {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-right: var(--space-md);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.todo-item input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.todo-item input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.todo-item input[type="checkbox"]:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.todo-category {
+  font-size: 1rem;
+  margin-right: var(--space-md);
+  opacity: 0.8;
+}
+
+.todo-text {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--text);
+  flex: 1;
+  font-weight: 500;
+}
+
+.todo-status {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--ok);
+  font-weight: 600;
+  margin-left: var(--space-sm);
+}
+
+/* ========== 最近技能区域 ========== */
+.skills-section {
+  animation: rise 0.6s var(--ease-out) 0.2s both;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.skill-card {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.skill-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+  border-color: var(--accent);
+}
+
+.skill-card:hover::before {
+  transform: scaleY(1);
+}
+
+.skill-card:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.skill-icon {
+  font-size: 1.5rem;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+}
+
+.skill-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.skill-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-strong);
+  margin-bottom: var(--space-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skill-time {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.skill-arrow {
+  font-size: 1rem;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.skill-card:hover .skill-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ========== 响应式调整 ========== */
+@media (max-width: 640px) {
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========== 深色主题调整 ========== */
+:root[data-theme="dark"] .stat-card,
+:root[data-theme="dark"] .todos-section,
+:root[data-theme="dark"] .skill-card {
+  background: var(--bg-elevated);
+}
+
+/* ========== 浅色主题调整 ========== */
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .todos-section,
+:root[data-theme="light"] .skill-card {
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+}
