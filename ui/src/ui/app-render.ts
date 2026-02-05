@@ -76,6 +76,7 @@ import {
 } from "./navigation";
 import { renderChannels } from "./views/channels";
 import { renderChat } from "./views/chat";
+import type { ChatProps } from "./views/chat";
 import { renderConfig } from "./views/config";
 import { renderCron } from "./views/cron";
 import { renderDebug } from "./views/debug";
@@ -104,6 +105,87 @@ function resolveAssistantAvatarUrl(state: AppViewState): string | undefined {
   return identity?.avatarUrl;
 }
 
+function buildChatProps(
+  state: AppViewState,
+  ctx: {
+    showThinking: boolean;
+    focusMode: boolean;
+    assistantAvatarUrl: string | null;
+    chatDisabledReason: string | null;
+  },
+): ChatProps {
+  return {
+    sessionKey: state.sessionKey,
+    onSessionKeyChange: (next) => {
+      state.sessionKey = next;
+      state.chatMessage = "";
+      state.chatAttachments = [];
+      state.chatStream = null;
+      state.chatStreamStartedAt = null;
+      state.chatRunId = null;
+      state.chatQueue = [];
+      state.resetToolStream();
+      state.resetChatScroll();
+      state.applySettings({
+        ...state.settings,
+        sessionKey: next,
+        lastActiveSessionKey: next,
+      });
+      void state.loadAssistantIdentity();
+      void loadChatHistory(state);
+      void refreshChatAvatar(state);
+    },
+    thinkingLevel: state.chatThinkingLevel,
+    showThinking: ctx.showThinking,
+    loading: state.chatLoading,
+    sending: state.chatSending,
+    compactionStatus: state.compactionStatus,
+    assistantAvatarUrl: ctx.assistantAvatarUrl,
+    messages: state.chatMessages,
+    toolMessages: state.chatToolMessages,
+    stream: state.chatStream,
+    streamStartedAt: state.chatStreamStartedAt,
+    draft: state.chatMessage,
+    queue: state.chatQueue,
+    connected: state.connected,
+    canSend: state.connected,
+    disabledReason: ctx.chatDisabledReason,
+    error: state.lastError,
+    sessions: state.sessionsResult,
+    focusMode: ctx.focusMode,
+    onRefresh: () => {
+      state.resetToolStream();
+      return Promise.all([loadChatHistory(state), refreshChatAvatar(state)]);
+    },
+    onToggleFocusMode: () => {
+      if (state.onboarding) return;
+      state.applySettings({
+        ...state.settings,
+        chatFocusMode: !state.settings.chatFocusMode,
+      });
+    },
+    onChatScroll: (event) => state.handleChatScroll(event),
+    onDraftChange: (next) => (state.chatMessage = next),
+    attachments: state.chatAttachments,
+    onAttachmentsChange: (next) => (state.chatAttachments = next),
+    onSend: () => state.handleSendChat(),
+    canAbort: Boolean(state.chatRunId),
+    onAbort: () => void state.handleAbortChat(),
+    onQueueRemove: (id) => state.removeQueuedMessage(id),
+    onNewSession: () => state.handleSendChat("/new", { restoreDraft: true }),
+    // Sidebar props for tool output viewing
+    sidebarOpen: state.sidebarOpen,
+    sidebarContent: state.sidebarContent,
+    sidebarError: state.sidebarError,
+    splitRatio: state.splitRatio,
+    onOpenSidebar: (content: string) => state.handleOpenSidebar(content),
+    onCloseSidebar: () => state.handleCloseSidebar(),
+    onSplitRatioChange: (ratio: number) => state.handleSplitRatioChange(ratio),
+    assistantName: state.assistantName,
+    assistantAvatar: state.assistantAvatar,
+  };
+}
+
 export function renderApp(state: AppViewState) {
   const presenceCount = state.presenceEntries.length;
   const sessionsCount = state.sessionsResult?.count ?? null;
@@ -114,6 +196,22 @@ export function renderApp(state: AppViewState) {
   const showThinking = state.onboarding ? false : state.settings.chatShowThinking;
   const assistantAvatarUrl = resolveAssistantAvatarUrl(state);
   const chatAvatarUrl = state.chatAvatarUrl ?? assistantAvatarUrl ?? null;
+  const chatProps = buildChatProps(state, {
+    showThinking,
+    focusMode: chatFocus,
+    assistantAvatarUrl: chatAvatarUrl,
+    chatDisabledReason,
+  });
+  const chatDockTabs = new Set<Tab>([
+    "home",
+    "marketing",
+    "data-processing",
+    "market-analysis",
+    "customer-service",
+    "brand-management",
+    "sentiment-monitor",
+  ]);
+  const shouldShowChatDock = !isChat && chatDockTabs.has(state.tab);
 
   return html`
     <div class="shell ${isChat ? "shell--chat" : ""} ${chatFocus ? "shell--chat-focus" : ""} ${state.settings.navCollapsed ? "shell--nav-collapsed" : ""} ${state.onboarding ? "shell--onboarding" : ""}">
@@ -433,76 +531,7 @@ export function renderApp(state: AppViewState) {
 
         ${
           state.tab === "chat"
-            ? renderChat({
-                sessionKey: state.sessionKey,
-                onSessionKeyChange: (next) => {
-                  state.sessionKey = next;
-                  state.chatMessage = "";
-                  state.chatAttachments = [];
-                  state.chatStream = null;
-                  state.chatStreamStartedAt = null;
-                  state.chatRunId = null;
-                  state.chatQueue = [];
-                  state.resetToolStream();
-                  state.resetChatScroll();
-                  state.applySettings({
-                    ...state.settings,
-                    sessionKey: next,
-                    lastActiveSessionKey: next,
-                  });
-                  void state.loadAssistantIdentity();
-                  void loadChatHistory(state);
-                  void refreshChatAvatar(state);
-                },
-                thinkingLevel: state.chatThinkingLevel,
-                showThinking,
-                loading: state.chatLoading,
-                sending: state.chatSending,
-                compactionStatus: state.compactionStatus,
-                assistantAvatarUrl: chatAvatarUrl,
-                messages: state.chatMessages,
-                toolMessages: state.chatToolMessages,
-                stream: state.chatStream,
-                streamStartedAt: state.chatStreamStartedAt,
-                draft: state.chatMessage,
-                queue: state.chatQueue,
-                connected: state.connected,
-                canSend: state.connected,
-                disabledReason: chatDisabledReason,
-                error: state.lastError,
-                sessions: state.sessionsResult,
-                focusMode: chatFocus,
-                onRefresh: () => {
-                  state.resetToolStream();
-                  return Promise.all([loadChatHistory(state), refreshChatAvatar(state)]);
-                },
-                onToggleFocusMode: () => {
-                  if (state.onboarding) return;
-                  state.applySettings({
-                    ...state.settings,
-                    chatFocusMode: !state.settings.chatFocusMode,
-                  });
-                },
-                onChatScroll: (event) => state.handleChatScroll(event),
-                onDraftChange: (next) => (state.chatMessage = next),
-                attachments: state.chatAttachments,
-                onAttachmentsChange: (next) => (state.chatAttachments = next),
-                onSend: () => state.handleSendChat(),
-                canAbort: Boolean(state.chatRunId),
-                onAbort: () => void state.handleAbortChat(),
-                onQueueRemove: (id) => state.removeQueuedMessage(id),
-                onNewSession: () => state.handleSendChat("/new", { restoreDraft: true }),
-                // Sidebar props for tool output viewing
-                sidebarOpen: state.sidebarOpen,
-                sidebarContent: state.sidebarContent,
-                sidebarError: state.sidebarError,
-                splitRatio: state.splitRatio,
-                onOpenSidebar: (content: string) => state.handleOpenSidebar(content),
-                onCloseSidebar: () => state.handleCloseSidebar(),
-                onSplitRatioChange: (ratio: number) => state.handleSplitRatioChange(ratio),
-                assistantName: state.assistantName,
-                assistantAvatar: state.assistantAvatar,
-              })
+            ? renderChat(chatProps)
             : nothing
         }
 
@@ -565,7 +594,9 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "marketing"
             ? html`
-                <openclaw-view-marketing></openclaw-view-marketing>
+                <openclaw-view-marketing
+                  .skillsReport=${state.skillsReport}
+                ></openclaw-view-marketing>
               `
             : nothing
         }
@@ -573,7 +604,9 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "data-processing"
             ? html`
-                <openclaw-view-data-processing></openclaw-view-data-processing>
+                <openclaw-view-data-processing
+                  .skillsReport=${state.skillsReport}
+                ></openclaw-view-data-processing>
               `
             : nothing
         }
@@ -581,7 +614,9 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "market-analysis"
             ? html`
-                <openclaw-view-market-analysis></openclaw-view-market-analysis>
+                <openclaw-view-market-analysis
+                  .skillsReport=${state.skillsReport}
+                ></openclaw-view-market-analysis>
               `
             : nothing
         }
@@ -589,7 +624,9 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "customer-service"
             ? html`
-                <openclaw-view-customer-service></openclaw-view-customer-service>
+                <openclaw-view-customer-service
+                  .skillsReport=${state.skillsReport}
+                ></openclaw-view-customer-service>
               `
             : nothing
         }
@@ -597,7 +634,9 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "brand-management"
             ? html`
-                <openclaw-view-brand-management></openclaw-view-brand-management>
+                <openclaw-view-brand-management
+                  .skillsReport=${state.skillsReport}
+                ></openclaw-view-brand-management>
               `
             : nothing
         }
@@ -605,7 +644,9 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "sentiment-monitor"
             ? html`
-                <openclaw-view-sentiment-monitor></openclaw-view-sentiment-monitor>
+                <openclaw-view-sentiment-monitor
+                  .skillsReport=${state.skillsReport}
+                ></openclaw-view-sentiment-monitor>
               `
             : nothing
         }
@@ -651,6 +692,17 @@ export function renderApp(state: AppViewState) {
                 onExport: (lines, label) => state.exportLogs(lines, label),
                 onScroll: (event) => state.handleLogsScroll(event),
               })
+            : nothing
+        }
+        ${
+          shouldShowChatDock
+            ? html`
+                <section class="chat-dock">
+                  <div class="chat-dock__card">
+                    ${renderChat(chatProps)}
+                  </div>
+                </section>
+              `
             : nothing
         }
       </main>
