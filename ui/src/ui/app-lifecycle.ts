@@ -17,6 +17,7 @@ import {
   syncTabWithLocation,
   syncThemeWithSettings,
 } from "./app-settings";
+import { handleInjectPrompt } from "./app-chat";
 
 type LifecycleHost = {
   basePath: string;
@@ -31,6 +32,7 @@ type LifecycleHost = {
   logsEntries: unknown[];
   popStateHandler: () => void;
   topbarObserver: ResizeObserver | null;
+  injectPromptHandler: (event: Event) => void;
 };
 
 export function handleConnected(host: LifecycleHost) {
@@ -40,6 +42,19 @@ export function handleConnected(host: LifecycleHost) {
   syncThemeWithSettings(host as unknown as Parameters<typeof syncThemeWithSettings>[0]);
   attachThemeListener(host as unknown as Parameters<typeof attachThemeListener>[0]);
   window.addEventListener("popstate", host.popStateHandler);
+
+  // Set up inject-prompt event handler
+  host.injectPromptHandler = (event: Event) => {
+    const customEvent = event as CustomEvent<{ prompt: string; skillKey: string; displayName: string }>;
+    if (customEvent.detail) {
+      handleInjectPrompt(
+        host as unknown as Parameters<typeof handleInjectPrompt>[0],
+        customEvent.detail,
+      );
+    }
+  };
+  document.addEventListener("inject-prompt", host.injectPromptHandler);
+
   connectGateway(host as unknown as Parameters<typeof connectGateway>[0]);
   startNodesPolling(host as unknown as Parameters<typeof startNodesPolling>[0]);
   if (host.tab === "logs") {
@@ -56,6 +71,7 @@ export function handleFirstUpdated(host: LifecycleHost) {
 
 export function handleDisconnected(host: LifecycleHost) {
   window.removeEventListener("popstate", host.popStateHandler);
+  document.removeEventListener("inject-prompt", host.injectPromptHandler);
   stopNodesPolling(host as unknown as Parameters<typeof stopNodesPolling>[0]);
   stopLogsPolling(host as unknown as Parameters<typeof stopLogsPolling>[0]);
   stopDebugPolling(host as unknown as Parameters<typeof stopDebugPolling>[0]);

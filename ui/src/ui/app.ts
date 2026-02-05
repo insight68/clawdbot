@@ -42,6 +42,7 @@ import {
   handleAbortChat as handleAbortChatInternal,
   handleSendChat as handleSendChatInternal,
   removeQueuedMessage as removeQueuedMessageInternal,
+  handleInjectPrompt as handleInjectPromptInternal,
 } from "./app-chat";
 import { DEFAULT_CRON_FORM, DEFAULT_LOG_LEVEL_FILTERS } from "./app-defaults";
 import { connectGateway as connectGatewayInternal } from "./app-gateway";
@@ -258,6 +259,7 @@ export class OpenClawApp extends LitElement {
   basePath = "";
   private popStateHandler = () =>
     onPopStateInternal(this as unknown as Parameters<typeof onPopStateInternal>[0]);
+  private injectPromptHandler: ((event: Event) => void) | null = null;
   private themeMedia: MediaQueryList | null = null;
   private themeMediaHandler: ((event: MediaQueryListEvent) => void) | null = null;
   private topbarObserver: ResizeObserver | null = null;
@@ -346,6 +348,13 @@ export class OpenClawApp extends LitElement {
     removeQueuedMessageInternal(
       this as unknown as Parameters<typeof removeQueuedMessageInternal>[0],
       id,
+    );
+  }
+
+  handleInjectPrompt(detail: { prompt: string; skillKey: string; displayName: string }) {
+    handleInjectPromptInternal(
+      this as unknown as Parameters<typeof handleInjectPromptInternal>[0],
+      detail,
     );
   }
 

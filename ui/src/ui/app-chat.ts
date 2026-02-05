@@ -240,3 +240,45 @@ export async function refreshChatAvatar(host: ChatHost) {
     host.chatAvatarUrl = null;
   }
 }
+
+// Handle inject-prompt event from assistant views
+type InjectPromptHost = ChatHost & {
+  tab: string;
+  chatQueue: ChatQueueItem[];
+};
+
+type InjectPromptEventDetail = {
+  prompt: string;
+  skillKey: string;
+  displayName: string;
+};
+
+export function handleInjectPrompt(
+  host: InjectPromptHost,
+  detail: InjectPromptEventDetail,
+) {
+  const { prompt, displayName } = detail;
+  if (!prompt.trim()) return;
+
+  // Switch to chat tab
+  (host as { tab: string }).tab = "chat";
+
+  // Set the prompt as the chat message
+  host.chatMessage = prompt;
+
+  // Add system message to indicate skill selection
+  host.chatQueue = [
+    ...host.chatQueue,
+    {
+      id: generateUUID(),
+      text: `使用技能: ${displayName}`,
+      createdAt: Date.now(),
+      refreshSessions: false,
+    },
+  ];
+
+  // Schedule scroll after render
+  requestAnimationFrame(() => {
+    scheduleChatScroll(host as unknown as Parameters<typeof scheduleChatScroll>[0], true);
+  });
+}
