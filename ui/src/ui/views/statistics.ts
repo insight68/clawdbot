@@ -1,7 +1,5 @@
-import { consume } from "@lit/context";
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { appContext } from "../app";
 
 export interface MessageStats {
   total: number;
@@ -28,10 +26,6 @@ export class StatisticsView extends LitElement {
       display: block;
     }
   `;
-
-  @consume({ context: appContext, subscribe: true })
-  @state()
-  app?: any;
 
   @state()
   messageStats: MessageStats = {

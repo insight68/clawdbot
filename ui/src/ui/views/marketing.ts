@@ -1,14 +1,12 @@
-import { consume } from "@lit/context";
-import { LitElement, html, css } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import type { SkillStatusEntry } from "../types";
+import { LitElement, html, css, svg } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import type { SkillStatusEntry, SkillStatusReport } from "../types";
 import {
   filterMarketingSkills,
   groupSkillsByCategory,
   type SkillMappingEntry,
   type SkillWithMapping,
 } from "../../config/skill-mappings";
-import { appContext } from "../app";
 
 /**
  * Marketing Assistant View Component
@@ -185,9 +183,8 @@ export class MarketingView extends LitElement {
     }
   `;
 
-  @consume({ context: appContext, subscribe: true })
-  @state()
-  app?: any;
+  @property({ attribute: false })
+  skillsReport?: SkillStatusReport | null;
 
   @state()
   selectedSkillKey: string | null = null;
@@ -198,11 +195,8 @@ export class MarketingView extends LitElement {
   @state()
   allSkills: SkillStatusEntry[] = [];
 
-  @state()
-  loading = true;
-
-  @state()
-  error: string | null = null;
+  // 模拟数据标志（开发模式）
+  private useMockData = false;
 
   protected createRenderRoot() {
     return this;
@@ -210,28 +204,137 @@ export class MarketingView extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.loadSkills();
+    // 不再需要 loadSkills，因为直接从 app.skillsReport 获取
   }
 
   disconnectedCallback(): void {
-    // 取消任何挂起的操作
-    this.loading = false;
     super.disconnectedCallback();
   }
 
-  private async loadSkills() {
-    try {
-      this.loading = true;
-      // 从后端获取所有 Skills
-      const report = await this.app?.skillsController?.getReport();
-      this.allSkills = report?.skills ?? [];
-      this.error = null;
-    } catch (err) {
-      console.error("Failed to load skills:", err);
-      this.error = "加载技能失败，请稍后重试。";
-    } finally {
-      this.loading = false;
-    }
+  // 获取模拟数据
+  private getMockSkills(): SkillStatusEntry[] {
+    return [
+      {
+        skillKey: "marketing-campaign",
+        name: "创建营销活动",
+        description: "规划新的营销活动和推广策略",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "marketing-content",
+        name: "生成营销内容",
+        description: "创建广告文案、社交媒体帖子等",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "marketing-analyze",
+        name: "分析营销数据",
+        description: "分析营销效果和ROI",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "marketing-optimize",
+        name: "优化投放策略",
+        description: "优化广告投放和受众定位",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "email-campaign",
+        name: "邮件营销",
+        description: "创建和管理邮件营销活动",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "social-media-weibo",
+        name: "社交媒体营销",
+        description: "社交媒体内容发布和管理",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "ad-copy-generator",
+        name: "广告文案生成器",
+        description: "生成高转化率的广告文案",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "audience-insights",
+        name: "受众分析",
+        description: "分析目标受众和行为特征",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "roi-calculator",
+        name: "ROI 分析",
+        description: "计算和优化营销投资回报率",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "ab-test-manager",
+        name: "A/B 测试",
+        description: "设计和分析 A/B 测试实验",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+    ];
   }
 
   private handleSkillClick(skill: SkillStatusEntry, mapping: SkillMappingEntry) {
@@ -329,25 +432,30 @@ export class MarketingView extends LitElement {
 
   private renderIcon(iconName: string) {
     // SVG 图标映射（可扩展）
-    const iconMap: Record<string, string> = {
-      megaphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l6-6 6 6M13 5l6 6-6 6M5 19l4-4"/></svg>`,
-      sparkles: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`,
-      barChart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-6"/></svg>`,
-      target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
-      mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12 13 2,6"/></svg>`,
-      share: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-      penTool: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>`,
-      users: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-      trendingUp: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
-      flask: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L6 14v6h12v-6l-4-4.69V2h-4z"/><path d="M8.5 2h7"/></svg>`,
+    const iconMap: Record<string, ReturnType<typeof svg>> = {
+      megaphone: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l6-6 6 6"/><path d="M13 5l6 6-6 6"/><path d="M5 19l4-4"/></svg>`,
+      sparkles: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M3 12h18"/><path d="M5.6 5.6l12.8 12.8"/><path d="M18.4 5.6 5.6 18.4"/></svg>`,
+      barChart: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg>`,
+      target: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+      mail: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>`,
+      share: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+      penTool: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13 16.5 5.5 2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>`,
+      users: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+      trendingUp: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+      flask: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L6 14v6h12v-6l-4-4.69V2h-4z"/><path d="M8.5 2h7"/></svg>`,
     };
 
-    return iconMap[iconName] ?? `<span>${iconName}</span>`;
+    return iconMap[iconName] ?? html`<span>${iconName}</span>`;
   }
 
   render() {
+    // 获取技能数据：优先使用外部传入的真实数据，否则使用模拟数据
+    const realSkills = this.skillsReport?.skills ?? [];
+    const skillsToUse =
+      this.useMockData || realSkills.length === 0 ? this.getMockSkills() : realSkills;
+
     // 筛选 Marketing 相关的 Skills
-    const marketingSkills = filterMarketingSkills(this.allSkills);
+    const marketingSkills = filterMarketingSkills(skillsToUse);
 
     // 分离 Featured Skills 和普通 Skills
     const featuredSkills = marketingSkills.filter((item) => item.mapping.visual.featured);
@@ -365,89 +473,96 @@ export class MarketingView extends LitElement {
       other: "其他",
     };
 
+    // 显示数据来源提示（仅在开发模式）
+    const showMockDataHint = this.useMockData && realSkills.length === 0;
+
     return html`
       <div class="assistant-container">
         <!-- 功能面板区域 -->
-        <div class="function-panel ${this.panelCollapsed ? "function-panel--collapsed" : ""}">
+        <div class="function-panel">
           <div class="panel-header">
             <div class="panel-header-text">
               <h1 class="panel-title">营销助手</h1>
               <p class="panel-subtitle">营销活动策划、内容生成和效果分析</p>
             </div>
-            <div class="panel-controls">
-              <button
-                class="panel-control-button"
-                @click=${this.togglePanelCollapse}
-                title="${this.panelCollapsed ? "展开面板" : "折叠面板"}"
-              >
-                ${
-                  this.panelCollapsed
-                    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>`
-                    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`
-                }
-              </button>
-            </div>
+            <div class="panel-controls panel-controls--text">全部展开</div>
           </div>
 
           ${
-            this.loading
+            showMockDataHint
               ? html`
-                  <div class="empty-state">
-                    <div class="empty-state-icon">⏳</div>
-                    <div class="empty-state-text">正在加载技能...</div>
+                  <div
+                    style="
+                      padding: var(--space-sm) var(--space-md);
+                      background: rgba(249, 115, 22, 0.1);
+                      border: 1px solid rgba(249, 115, 22, 0.3);
+                      border-radius: var(--radius-md);
+                      margin-bottom: var(--space-md);
+                      font-size: 0.875rem;
+                      color: rgb(249, 115, 22);
+                    "
+                  >
+                    📝 开发模式：当前显示模拟数据。配置 Marketing Skills 后将自动显示真实数据。
                   </div>
                 `
-              : this.error
-                ? html`
-                    <div class="empty-state">
-                      <div class="empty-state-icon">⚠️</div>
-                      <div class="empty-state-text">${this.error}</div>
-                    </div>
-                  `
-                : marketingSkills.length === 0
-                  ? html`
-                      <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <div class="empty-state-text">暂无营销相关技能，请先安装或启用相关技能。</div>
-                      </div>
-                    `
-                  : html`
-                      <!-- 快捷操作 -->
-                      ${
-                        featuredSkills.length > 0
-                          ? html`
-                              <div class="quick-actions">
-                                ${featuredSkills.map(({ skill, mapping }) =>
-                                  this.renderSkillCard(skill, mapping),
-                                )}
-                              </div>
-                            `
-                          : ""
-                      }
+              : ""
+          }
 
-                      <!-- Skills 网格（按分类） -->
-                      ${Object.entries(groupedSkills).map(([category, skills]) =>
-                        skills.length > 0
-                          ? html`
-                                <div class="section-title">
-                                  ${categoryLabels[category] ?? category}
-                                </div>
-                                <div class="skills-grid">
-                                  ${skills.map(({ skill, mapping }) =>
-                                    this.renderSkillCard(skill, mapping),
-                                  )}
-                                </div>
-                              `
-                          : "",
-                      )}
-                    `
+          ${
+            marketingSkills.length === 0
+              ? html`
+                  <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">暂无营销相关技能，请先安装或启用相关技能。</div>
+                  </div>
+                `
+              : html`
+                  <!-- 快捷操作 -->
+                  ${
+                    featuredSkills.length > 0
+                      ? html`
+                          <div class="quick-actions">
+                            ${featuredSkills.map(({ skill, mapping }) =>
+                              this.renderSkillCard(skill, mapping),
+                            )}
+                          </div>
+                        `
+                      : ""
+                  }
+
+                  <!-- Skills 网格（按分类） -->
+                  ${Object.entries(groupedSkills).map(([category, skills]) =>
+                    skills.length > 0
+                      ? html`
+                            <div class="section-title">
+                              ${categoryLabels[category] ?? category}
+                            </div>
+                            <div class="skills-grid">
+                              ${skills.map(({ skill, mapping }) =>
+                                this.renderSkillCard(skill, mapping),
+                              )}
+                            </div>
+                          `
+                      : "",
+                  )}
+                `
           }
         </div>
 
         <!-- 聊天区域 -->
         <div class="chat-area">
           <div class="chat-placeholder">
-            聊天区域（集成现有 chat 组件）
+            <div class="chat-cta">
+              <div class="chat-cta__badge">Chat</div>
+              <div class="chat-cta__title">开始对话，沿用你选中的技能提示词</div>
+              <div class="chat-cta__desc">点击下方进入聊天面板，或直接在右侧输入区继续对话。</div>
+              <div class="chat-cta__actions">
+                <button class="chat-cta__primary" @click=${() => (window.location.href = "/chat")}>
+                  打开聊天面板
+                </button>
+                <div class="chat-cta__hint">Tips: 在功能区点任意技能会把预设提示词注入输入框。</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

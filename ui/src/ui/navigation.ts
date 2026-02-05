@@ -4,7 +4,7 @@ import type { IconName } from "./icons.js";
 export const TAB_GROUPS = [
   {
     label: "",
-    tabs: ["home"],
+    tabs: ["chat", "home"],
   },
   {
     label: "",
@@ -36,6 +36,7 @@ export const TAB_GROUPS = [
 
 export type Tab =
   // 主导航
+  | "chat"
   | "home"
   | "statistics"
   | "docs"
@@ -57,6 +58,7 @@ export type Tab =
 
 const TAB_PATHS: Record<Tab, string> = {
   // 主导航
+  chat: "/chat",
   home: "/home",
   statistics: "/statistics",
   docs: "/docs",
@@ -120,7 +122,7 @@ export function tabFromPath(pathname: string, basePath = ""): Tab | null {
   }
   let normalized = normalizePath(path).toLowerCase();
   if (normalized.endsWith("/index.html")) normalized = "/";
-  if (normalized === "/") return "home";
+  if (normalized === "/") return "chat";
   return PATH_TO_TAB.get(normalized) ?? null;
 }
 
@@ -145,6 +147,8 @@ export function inferBasePathFromPathname(pathname: string): string {
 export function iconForTab(tab: Tab): IconName {
   switch (tab) {
     // 主导航
+    case "chat":
+      return "messageCircle";
     case "home":
       return "home";
     case "statistics":
@@ -187,6 +191,8 @@ export function iconForTab(tab: Tab): IconName {
 export function titleForTab(tab: Tab) {
   switch (tab) {
     // 主导航
+    case "chat":
+      return "聊天";
     case "home":
       return "首页";
     case "statistics":

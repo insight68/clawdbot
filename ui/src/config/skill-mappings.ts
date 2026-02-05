@@ -133,7 +133,7 @@ export const MARKETING_SKILL_MAPPINGS: SkillMappingEntry[] = [
 
   // === 内容生成类 Skills ===
   {
-    skillKeyPattern: "email-campaign",
+    skillKeyPattern: "email-campaign*",
     displayName: "邮件营销",
     description: "创建和管理邮件营销活动",
     category: "content",
