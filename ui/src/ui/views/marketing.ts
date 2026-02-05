@@ -2,11 +2,10 @@ import { LitElement, html, css, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { SkillStatusEntry, SkillStatusReport } from "../types";
 import {
-  filterMarketingSkills,
-  groupSkillsByCategory,
-  type SkillMappingEntry,
-  type SkillWithMapping,
-} from "../../config/skill-mappings";
+  filterRealSkillsByCategory,
+  type SkillWithViewMapping,
+  type ViewSkillMapping,
+} from "../../config/skill-category-mappings";
 
 /**
  * Marketing Assistant View Component
@@ -192,16 +191,6 @@ export class MarketingView extends LitElement {
   @state()
   panelCollapsed = false;
 
-  @state()
-  allSkills: SkillStatusEntry[] = [];
-
-  // 模拟数据标志（开发模式）
-  private useMockData = false;
-
-  protected createRenderRoot() {
-    return this;
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
     // 不再需要 loadSkills，因为直接从 app.skillsReport 获取
@@ -337,7 +326,7 @@ export class MarketingView extends LitElement {
     ];
   }
 
-  private handleSkillClick(skill: SkillStatusEntry, mapping: SkillMappingEntry) {
+  private handleSkillClick(skill: SkillStatusEntry, mapping: ViewSkillMapping) {
     const { type, prompt, link } = mapping.interaction;
 
     // 设置选中状态
@@ -381,7 +370,7 @@ export class MarketingView extends LitElement {
     this.panelCollapsed = !this.panelCollapsed;
   }
 
-  private renderSkillCard(skill: SkillStatusEntry, mapping: SkillMappingEntry) {
+  private renderSkillCard(skill: SkillStatusEntry, mapping: ViewSkillMapping) {
     const { visual, interaction } = mapping;
     const { variant, size, icon } = visual;
     const displayName = mapping.displayName ?? skill.name ?? "未命名技能";
@@ -449,64 +438,128 @@ export class MarketingView extends LitElement {
   }
 
   render() {
-    // 获取技能数据：优先使用外部传入的真实数据，否则使用模拟数据
+    // 获取技能数据：使用外部传入的真实数据
     const realSkills = this.skillsReport?.skills ?? [];
-    const skillsToUse =
-      this.useMockData || realSkills.length === 0 ? this.getMockSkills() : realSkills;
+    const skillsToUse = realSkills;
 
     // 筛选 Marketing 相关的 Skills
-    const marketingSkills = filterMarketingSkills(skillsToUse);
+    const marketingSkills = filterRealSkillsByCategory(skillsToUse, "marketing");
 
     // 分离 Featured Skills 和普通 Skills
     const featuredSkills = marketingSkills.filter((item) => item.mapping.visual.featured);
     const regularSkills = marketingSkills.filter((item) => !item.mapping.visual.featured);
 
     // 按分类组织普通 Skills
-    const groupedSkills = groupSkillsByCategory(regularSkills);
-
-    const categoryLabels: Record<string, string> = {
-      campaign: "营销活动策划",
-      content: "内容生成",
-      analyze: "数据分析",
-      optimize: "策略优化",
-      automation: "自动化工具",
-      other: "其他",
+    const groupedSkills: Record<string, SkillWithViewMapping[]> = {
+      strategy: [],
+      content: [],
+      social: [],
+      email: [],
+      seo: [],
+      paid: [],
+      cro: [],
+      analytics: [],
+      research: [],
+      other: [],
     };
 
-    // 显示数据来源提示（仅在开发模式）
-    const showMockDataHint = this.useMockData && realSkills.length === 0;
+    for (const item of regularSkills) {
+      const skillKey = item.skill.skillKey;
+      if (
+        skillKey.includes("strategy") ||
+        skillKey.includes("launch") ||
+        skillKey.includes("pricing") ||
+        skillKey.includes("referral") ||
+        skillKey.includes("free-tool")
+      ) {
+        groupedSkills.strategy.push(item);
+      } else if (
+        skillKey.includes("content") ||
+        skillKey.includes("copy") ||
+        skillKey.includes("writing") ||
+        skillKey.includes("editing")
+      ) {
+        groupedSkills.content.push(item);
+      } else if (
+        skillKey.includes("social") ||
+        skillKey.includes("instagram") ||
+        skillKey.includes("linkedin") ||
+        skillKey.includes("tiktok")
+      ) {
+        groupedSkills.social.push(item);
+      } else if (skillKey.includes("email")) {
+        groupedSkills.email.push(item);
+      } else if (
+        skillKey.includes("seo") ||
+        skillKey.includes("schema") ||
+        skillKey.includes("keyword")
+      ) {
+        groupedSkills.seo.push(item);
+      } else if (skillKey.includes("paid") || skillKey.includes("ads")) {
+        groupedSkills.paid.push(item);
+      } else if (
+        skillKey.includes("cro") ||
+        skillKey.includes("form") ||
+        skillKey.includes("page") ||
+        skillKey.includes("popup") ||
+        skillKey.includes("onboarding") ||
+        skillKey.includes("signup") ||
+        skillKey.includes("paywall")
+      ) {
+        groupedSkills.cro.push(item);
+      } else if (skillKey.includes("analytics") || skillKey.includes("tracking")) {
+        groupedSkills.analytics.push(item);
+      } else if (skillKey.includes("research") || skillKey.includes("ab-test")) {
+        groupedSkills.research.push(item);
+      } else {
+        groupedSkills.other.push(item);
+      }
+    }
+
+    const categoryLabels: Record<string, string> = {
+      strategy: "营销策略",
+      content: "内容创作",
+      social: "社交媒体",
+      email: "邮件营销",
+      seo: "SEO优化",
+      paid: "付费广告",
+      cro: "转化优化",
+      analytics: "数据分析",
+      research: "用户研究",
+      other: "其他",
+    };
 
     return html`
       <div class="assistant-container">
         <!-- 功能面板区域 -->
-        <div class="function-panel">
+        <div class="function-panel ${this.panelCollapsed ? "function-panel--collapsed" : ""}">
           <div class="panel-header">
             <div class="panel-header-text">
               <h1 class="panel-title">营销助手</h1>
               <p class="panel-subtitle">营销活动策划、内容生成和效果分析</p>
             </div>
-            <div class="panel-controls panel-controls--text">全部展开</div>
+            <div class="panel-controls">
+              <button
+                class="panel-control-button"
+                @click=${this.togglePanelCollapse}
+                title="${this.panelCollapsed ? "展开面板" : "折叠面板"}"
+              >
+                ${
+                  this.panelCollapsed
+                    ? html`
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="18 15 12 9 6 15" />
+                        </svg>
+                      `
+                    : html`
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      `
+                }
+              </button>
+            </div>
           </div>
-
-          ${
-            showMockDataHint
-              ? html`
-                  <div
-                    style="
-                      padding: var(--space-sm) var(--space-md);
-                      background: rgba(249, 115, 22, 0.1);
-                      border: 1px solid rgba(249, 115, 22, 0.3);
-                      border-radius: var(--radius-md);
-                      margin-bottom: var(--space-md);
-                      font-size: 0.875rem;
-                      color: rgb(249, 115, 22);
-                    "
-                  >
-                    📝 开发模式：当前显示模拟数据。配置 Marketing Skills 后将自动显示真实数据。
-                  </div>
-                `
-              : ""
-          }
 
           ${
             marketingSkills.length === 0
