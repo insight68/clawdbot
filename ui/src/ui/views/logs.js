@@ -1,32 +1,28 @@
 import { html, nothing } from "lit";
 const LEVELS = ["trace", "debug", "info", "warn", "error", "fatal"];
 function formatTime(value) {
-    if (!value)
-        return "";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime()))
-        return value;
-    return date.toLocaleTimeString();
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleTimeString();
 }
 function matchesFilter(entry, needle) {
-    if (!needle)
-        return true;
-    const haystack = [entry.message, entry.subsystem, entry.raw]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-    return haystack.includes(needle);
+  if (!needle) return true;
+  const haystack = [entry.message, entry.subsystem, entry.raw]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(needle);
 }
 export function renderLogs(props) {
-    const needle = props.filterText.trim().toLowerCase();
-    const levelFiltered = LEVELS.some((level) => !props.levelFilters[level]);
-    const filtered = props.entries.filter((entry) => {
-        if (entry.level && !props.levelFilters[entry.level])
-            return false;
-        return matchesFilter(entry, needle);
-    });
-    const exportLabel = needle || levelFiltered ? "filtered" : "visible";
-    return html `
+  const needle = props.filterText.trim().toLowerCase();
+  const levelFiltered = LEVELS.some((level) => !props.levelFilters[level]);
+  const filtered = props.entries.filter((entry) => {
+    if (entry.level && !props.levelFilters[entry.level]) return false;
+    return matchesFilter(entry, needle);
+  });
+  const exportLabel = needle || levelFiltered ? "filtered" : "visible";
+  return html`
     <section class="card">
       <div class="row" style="justify-content: space-between;">
         <div>
@@ -40,7 +36,11 @@ export function renderLogs(props) {
           <button
             class="btn"
             ?disabled=${filtered.length === 0}
-            @click=${() => props.onExport(filtered.map((entry) => entry.raw), exportLabel)}
+            @click=${() =>
+              props.onExport(
+                filtered.map((entry) => entry.raw),
+                exportLabel,
+              )}
           >
             Export ${exportLabel}
           </button>
@@ -67,7 +67,8 @@ export function renderLogs(props) {
       </div>
 
       <div class="chip-row" style="margin-top: 12px;">
-        ${LEVELS.map((level) => html `
+        ${LEVELS.map(
+          (level) => html`
             <label class="chip log-chip ${level}">
               <input
                 type="checkbox"
@@ -76,34 +77,45 @@ export function renderLogs(props) {
               />
               <span>${level}</span>
             </label>
-          `)}
+          `,
+        )}
       </div>
 
-      ${props.file
-        ? html `<div class="muted" style="margin-top: 10px;">File: ${props.file}</div>`
-        : nothing}
-      ${props.truncated
-        ? html `
+      ${
+        props.file
+          ? html`<div class="muted" style="margin-top: 10px;">File: ${props.file}</div>`
+          : nothing
+      }
+      ${
+        props.truncated
+          ? html`
               <div class="callout" style="margin-top: 10px">Log output truncated; showing latest chunk.</div>
             `
-        : nothing}
-      ${props.error
-        ? html `<div class="callout danger" style="margin-top: 10px;">${props.error}</div>`
-        : nothing}
+          : nothing
+      }
+      ${
+        props.error
+          ? html`<div class="callout danger" style="margin-top: 10px;">${props.error}</div>`
+          : nothing
+      }
 
       <div class="log-stream" style="margin-top: 12px;" @scroll=${props.onScroll}>
-        ${filtered.length === 0
-        ? html `
+        ${
+          filtered.length === 0
+            ? html`
                 <div class="muted" style="padding: 12px">No log entries.</div>
               `
-        : filtered.map((entry) => html `
+            : filtered.map(
+                (entry) => html`
                 <div class="log-row">
                   <div class="log-time mono">${formatTime(entry.time)}</div>
                   <div class="log-level ${entry.level ?? ""}">${entry.level ?? ""}</div>
                   <div class="log-subsystem mono">${entry.subsystem ?? ""}</div>
                   <div class="log-message mono">${entry.message ?? entry.raw}</div>
                 </div>
-              `)}
+              `,
+              )
+        }
       </div>
     </section>
   `;

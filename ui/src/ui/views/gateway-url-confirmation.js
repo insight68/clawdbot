@@ -1,9 +1,8 @@
 import { html, nothing } from "lit";
 export function renderGatewayUrlConfirmation(state) {
-    const { pendingGatewayUrl } = state;
-    if (!pendingGatewayUrl)
-        return nothing;
-    return html `
+  const { pendingGatewayUrl } = state;
+  if (!pendingGatewayUrl) return nothing;
+  return html`
     <div class="exec-approval-overlay" role="dialog" aria-modal="true" aria-live="polite">
       <div class="exec-approval-card">
         <div class="exec-approval-header">

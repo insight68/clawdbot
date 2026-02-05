@@ -1,12 +1,25 @@
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
+var __decorate =
+  (this && this.__decorate) ||
+  function (decorators, target, key, desc) {
+    var c = arguments.length,
+      r =
+        c < 3
+          ? target
+          : desc === null
+            ? (desc = Object.getOwnPropertyDescriptor(target, key))
+            : desc,
+      d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if ((d = decorators[i]))
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return (c > 3 && r && Object.defineProperty(target, key, r), r);
+  };
 import { LitElement, html, css, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { filterSkillsByMultipleCategories, } from "../../config/skill-category-mappings";
+import { filterSkillsByMultipleCategories } from "../../config/skill-category-mappings";
 /**
  * Market Analysis View Component
  *
@@ -14,7 +27,7 @@ import { filterSkillsByMultipleCategories, } from "../../config/skill-category-m
  * 展示同时属于 Data 和 Marketing 类别的技能
  */
 let MarketAnalysisView = class MarketAnalysisView extends LitElement {
-    static styles = css `
+  static styles = css`
     :host {
       display: block;
       height: 100%;
@@ -181,174 +194,177 @@ let MarketAnalysisView = class MarketAnalysisView extends LitElement {
       }
     }
   `;
-    skillsReport;
-    selectedSkillKey = null;
-    panelCollapsed = false;
-    useMockData = false;
-    createRenderRoot() {
-        return this;
-    }
-    connectedCallback() {
-        super.connectedCallback();
-    }
-    disconnectedCallback() {
-        super.disconnectedCallback();
-    }
-    // 获取模拟数据（同时属于 data 和 marketing 的技能）
-    getMockSkills() {
-        return [
-            {
-                skillKey: "analytics-tracking",
-                name: "分析追踪",
-                description: "追踪和分析用户行为数据，评估营销效果",
-                enabled: true,
-                source: "builtin",
-                messageCount: 0,
-                editCount: 0,
-                lastUsedAt: null,
-                editedAt: null,
-                messages: {},
+  skillsReport;
+  selectedSkillKey = null;
+  panelCollapsed = false;
+  useMockData = false;
+  createRenderRoot() {
+    return this;
+  }
+  connectedCallback() {
+    super.connectedCallback();
+  }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+  // 获取模拟数据（同时属于 data 和 marketing 的技能）
+  getMockSkills() {
+    return [
+      {
+        skillKey: "analytics-tracking",
+        name: "分析追踪",
+        description: "追踪和分析用户行为数据，评估营销效果",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+      {
+        skillKey: "seo-audit",
+        name: "SEO审计",
+        description: "审计网站SEO数据，分析搜索表现和关键词排名",
+        enabled: true,
+        source: "builtin",
+        messageCount: 0,
+        editCount: 0,
+        lastUsedAt: null,
+        editedAt: null,
+        messages: {},
+      },
+    ];
+  }
+  handleSkillClick(skill, mapping) {
+    const { type, prompt, link } = mapping.interaction;
+    // 设置选中状态
+    this.selectedSkillKey = skill.skillKey;
+    switch (type) {
+      case "prompt":
+        // 将提示词注入到聊天输入框
+        this.dispatchEvent(
+          new CustomEvent("inject-prompt", {
+            detail: {
+              prompt: prompt ?? "",
+              skillKey: skill.skillKey,
+              displayName: mapping.displayName ?? skill.name ?? "未命名技能",
             },
-            {
-                skillKey: "seo-audit",
-                name: "SEO审计",
-                description: "审计网站SEO数据，分析搜索表现和关键词排名",
-                enabled: true,
-                source: "builtin",
-                messageCount: 0,
-                editCount: 0,
-                lastUsedAt: null,
-                editedAt: null,
-                messages: {},
-            },
-        ];
-    }
-    handleSkillClick(skill, mapping) {
-        const { type, prompt, link } = mapping.interaction;
-        // 设置选中状态
-        this.selectedSkillKey = skill.skillKey;
-        switch (type) {
-            case "prompt":
-                // 将提示词注入到聊天输入框
-                this.dispatchEvent(new CustomEvent("inject-prompt", {
-                    detail: {
-                        prompt: prompt ?? "",
-                        skillKey: skill.skillKey,
-                        displayName: mapping.displayName ?? skill.name ?? "未命名技能",
-                    },
-                    bubbles: true,
-                    composed: true,
-                }));
-                break;
-            case "link":
-                if (link) {
-                    window.open(link, "_blank");
-                }
-                break;
-            case "tool":
-                // TODO: 实现工具调用
-                console.log("Tool invocation:", mapping.interaction.toolParams);
-                break;
-            case "modal":
-                // TODO: 实现模态框
-                console.log("Modal:", mapping.interaction.modal);
-                break;
+            bubbles: true,
+            composed: true,
+          }),
+        );
+        break;
+      case "link":
+        if (link) {
+          window.open(link, "_blank");
         }
+        break;
+      case "tool":
+        // TODO: 实现工具调用
+        console.log("Tool invocation:", mapping.interaction.toolParams);
+        break;
+      case "modal":
+        // TODO: 实现模态框
+        console.log("Modal:", mapping.interaction.modal);
+        break;
     }
-    togglePanelCollapse() {
-        this.panelCollapsed = !this.panelCollapsed;
-    }
-    renderSkillCard(skill, mapping) {
-        const { visual, interaction } = mapping;
-        const { variant, size, icon } = visual;
-        const displayName = mapping.displayName ?? skill.name ?? "未命名技能";
-        const description = mapping.description ?? skill.description ?? "暂无描述";
-        const isSelected = this.selectedSkillKey === skill.skillKey;
-        // 生成卡片类名
-        const cardClasses = [
-            "skill-card",
-            `skill-card--${variant}`,
-            `skill-card--${size}`,
-            isSelected ? "skill-card--selected" : "",
-        ]
-            .filter(Boolean)
-            .join(" ");
-        return html `
+  }
+  togglePanelCollapse() {
+    this.panelCollapsed = !this.panelCollapsed;
+  }
+  renderSkillCard(skill, mapping) {
+    const { visual, interaction } = mapping;
+    const { variant, size, icon } = visual;
+    const displayName = mapping.displayName ?? skill.name ?? "未命名技能";
+    const description = mapping.description ?? skill.description ?? "暂无描述";
+    const isSelected = this.selectedSkillKey === skill.skillKey;
+    // 生成卡片类名
+    const cardClasses = [
+      "skill-card",
+      `skill-card--${variant}`,
+      `skill-card--${size}`,
+      isSelected ? "skill-card--selected" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return html`
       <div
         class="${cardClasses}"
         @click=${() => this.handleSkillClick(skill, mapping)}
         role="button"
         tabindex="0"
         @keydown=${(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                this.handleSkillClick(skill, mapping);
-            }
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            this.handleSkillClick(skill, mapping);
+          }
         }}
       >
-        ${size === "large"
-            ? html `
+        ${
+          size === "large"
+            ? html`
               <div class="skill-icon">${this.renderIcon(icon)}</div>
               <div class="skill-title">${displayName}</div>
               <div class="skill-description">${description}</div>
             `
-            : html `
+            : html`
               <div class="skill-icon">${this.renderIcon(icon)}</div>
               <div class="skill-content">
                 <div class="skill-title">${displayName}</div>
                 <div class="skill-description">${description}</div>
               </div>
-            `}
+            `
+        }
       </div>
     `;
+  }
+  renderIcon(iconName) {
+    // SVG 图标映射（可扩展）
+    const iconMap = {
+      chart: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg>`,
+      search: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`,
+      trend: svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+    };
+    return iconMap[iconName] ?? html`<span>${iconName}</span>`;
+  }
+  render() {
+    // 获取技能数据：优先使用 app 的真实数据，否则使用模拟数据
+    const realSkills = this.skillsReport?.skills ?? [];
+    const skillsToUse =
+      this.useMockData || realSkills.length === 0 ? this.getMockSkills() : realSkills;
+    // 筛选同时属于 Data 和 Marketing 的 Skills（交集）
+    const marketAnalysisSkills = filterSkillsByMultipleCategories(skillsToUse, [
+      "data",
+      "marketing",
+    ]);
+    // 分离 Featured Skills 和普通 Skills
+    const featuredSkills = marketAnalysisSkills.filter((item) => item.mapping.visual.featured);
+    const regularSkills = marketAnalysisSkills.filter((item) => !item.mapping.visual.featured);
+    // 按分类组织普通 Skills
+    const groupedSkills = {
+      analytics: [],
+      seo: [],
+      other: [],
+    };
+    for (const item of regularSkills) {
+      const skillKey = item.skill.skillKey;
+      if (skillKey.includes("analytics")) {
+        groupedSkills.analytics.push(item);
+      } else if (skillKey.includes("seo")) {
+        groupedSkills.seo.push(item);
+      } else {
+        groupedSkills.other.push(item);
+      }
     }
-    renderIcon(iconName) {
-        // SVG 图标映射（可扩展）
-        const iconMap = {
-            chart: svg `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg>`,
-            search: svg `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`,
-            trend: svg `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
-        };
-        return iconMap[iconName] ?? html `<span>${iconName}</span>`;
-    }
-    render() {
-        // 获取技能数据：优先使用 app 的真实数据，否则使用模拟数据
-        const realSkills = this.skillsReport?.skills ?? [];
-        const skillsToUse = this.useMockData || realSkills.length === 0 ? this.getMockSkills() : realSkills;
-        // 筛选同时属于 Data 和 Marketing 的 Skills（交集）
-        const marketAnalysisSkills = filterSkillsByMultipleCategories(skillsToUse, [
-            "data",
-            "marketing",
-        ]);
-        // 分离 Featured Skills 和普通 Skills
-        const featuredSkills = marketAnalysisSkills.filter((item) => item.mapping.visual.featured);
-        const regularSkills = marketAnalysisSkills.filter((item) => !item.mapping.visual.featured);
-        // 按分类组织普通 Skills
-        const groupedSkills = {
-            analytics: [],
-            seo: [],
-            other: [],
-        };
-        for (const item of regularSkills) {
-            const skillKey = item.skill.skillKey;
-            if (skillKey.includes("analytics")) {
-                groupedSkills.analytics.push(item);
-            }
-            else if (skillKey.includes("seo")) {
-                groupedSkills.seo.push(item);
-            }
-            else {
-                groupedSkills.other.push(item);
-            }
-        }
-        const categoryLabels = {
-            analytics: "数据分析与追踪",
-            seo: "SEO审计与优化",
-            other: "其他",
-        };
-        // 显示数据来源提示（仅在开发模式）
-        const showMockDataHint = this.useMockData && realSkills.length === 0;
-        return html `
+    const categoryLabels = {
+      analytics: "数据分析与追踪",
+      seo: "SEO审计与优化",
+      other: "其他",
+    };
+    // 显示数据来源提示（仅在开发模式）
+    const showMockDataHint = this.useMockData && realSkills.length === 0;
+    return html`
       <div class="assistant-container">
         <!-- 功能面板区域 -->
         <div class="function-panel ${this.panelCollapsed ? "function-panel--collapsed" : ""}">
@@ -363,15 +379,18 @@ let MarketAnalysisView = class MarketAnalysisView extends LitElement {
                 @click=${this.togglePanelCollapse}
                 title="${this.panelCollapsed ? "展开面板" : "折叠面板"}"
               >
-                ${this.panelCollapsed
-            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>`
-            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`}
+                ${
+                  this.panelCollapsed
+                    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>`
+                    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`
+                }
               </button>
             </div>
           </div>
 
-          ${showMockDataHint
-            ? html `
+          ${
+            showMockDataHint
+              ? html`
                   <div
                     style="
                       padding: var(--space-sm) var(--space-md);
@@ -386,28 +405,33 @@ let MarketAnalysisView = class MarketAnalysisView extends LitElement {
                     📝 开发模式：当前显示模拟数据。配置相关 Skills 后将自动显示真实数据。
                   </div>
                 `
-            : ""}
+              : ""
+          }
 
-          ${marketAnalysisSkills.length === 0
-            ? html `
+          ${
+            marketAnalysisSkills.length === 0
+              ? html`
                   <div class="empty-state">
                     <div class="empty-state-icon">📭</div>
                     <div class="empty-state-text">暂无市场分析相关技能。</div>
                   </div>
                 `
-            : html `
+              : html`
                   <!-- 快捷操作 -->
-                  ${featuredSkills.length > 0
-                ? html `
+                  ${
+                    featuredSkills.length > 0
+                      ? html`
                           <div class="quick-actions">
                             ${featuredSkills.map(({ skill, mapping }) => this.renderSkillCard(skill, mapping))}
                           </div>
                         `
-                : ""}
+                      : ""
+                  }
 
                   <!-- Skills 网格（按分类） -->
-                  ${Object.entries(groupedSkills).map(([category, skills]) => skills.length > 0
-                ? html `
+                  ${Object.entries(groupedSkills).map(([category, skills]) =>
+                    skills.length > 0
+                      ? html`
                             <div class="section-title">
                               ${categoryLabels[category] ?? category}
                             </div>
@@ -415,8 +439,10 @@ let MarketAnalysisView = class MarketAnalysisView extends LitElement {
                               ${skills.map(({ skill, mapping }) => this.renderSkillCard(skill, mapping))}
                             </div>
                           `
-                : "")}
-                `}
+                      : "",
+                  )}
+                `
+          }
         </div>
 
         <!-- 聊天区域 -->
@@ -438,21 +464,14 @@ let MarketAnalysisView = class MarketAnalysisView extends LitElement {
         </div>
       </div>
     `;
-    }
+  }
 };
-__decorate([
-    property({ attribute: false })
-], MarketAnalysisView.prototype, "skillsReport", void 0);
-__decorate([
-    state()
-], MarketAnalysisView.prototype, "selectedSkillKey", void 0);
-__decorate([
-    state()
-], MarketAnalysisView.prototype, "panelCollapsed", void 0);
-__decorate([
-    state()
-], MarketAnalysisView.prototype, "useMockData", void 0);
-MarketAnalysisView = __decorate([
-    customElement("openclaw-view-market-analysis")
-], MarketAnalysisView);
+__decorate([property({ attribute: false })], MarketAnalysisView.prototype, "skillsReport", void 0);
+__decorate([state()], MarketAnalysisView.prototype, "selectedSkillKey", void 0);
+__decorate([state()], MarketAnalysisView.prototype, "panelCollapsed", void 0);
+__decorate([state()], MarketAnalysisView.prototype, "useMockData", void 0);
+MarketAnalysisView = __decorate(
+  [customElement("openclaw-view-market-analysis")],
+  MarketAnalysisView,
+);
 export { MarketAnalysisView };

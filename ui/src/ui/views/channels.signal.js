@@ -2,8 +2,8 @@ import { html, nothing } from "lit";
 import { formatAgo } from "../format";
 import { renderChannelConfigSection } from "./channels.config";
 export function renderSignalCard(params) {
-    const { props, signal, accountCountLabel } = params;
-    return html `
+  const { props, signal, accountCountLabel } = params;
+  return html`
     <div class="card">
       <div class="card-title">Signal</div>
       <div class="card-sub">signal-cli status and channel configuration.</div>
@@ -32,18 +32,22 @@ export function renderSignalCard(params) {
         </div>
       </div>
 
-      ${signal?.lastError
-        ? html `<div class="callout danger" style="margin-top: 12px;">
+      ${
+        signal?.lastError
+          ? html`<div class="callout danger" style="margin-top: 12px;">
             ${signal.lastError}
           </div>`
-        : nothing}
+          : nothing
+      }
 
-      ${signal?.probe
-        ? html `<div class="callout" style="margin-top: 12px;">
+      ${
+        signal?.probe
+          ? html`<div class="callout" style="margin-top: 12px;">
             Probe ${signal.probe.ok ? "ok" : "failed"} ·
             ${signal.probe.status ?? ""} ${signal.probe.error ?? ""}
           </div>`
-        : nothing}
+          : nothing
+      }
 
       ${renderChannelConfigSection({ channelId: "signal", props })}
 

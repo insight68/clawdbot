@@ -19,6 +19,7 @@ import type {
   StatusSummary,
 } from "./types";
 import type { ChatQueueItem, CronFormState } from "./ui-types";
+import type { ChatProps } from "./views/chat";
 import { parseAgentSessionKey } from "../../../src/routing/session-key.js";
 import { refreshChatAvatar } from "./app-chat";
 import { renderChatControls, renderTab, renderThemeToggle } from "./app-render.helpers";
@@ -76,7 +77,6 @@ import {
 } from "./navigation";
 import { renderChannels } from "./views/channels";
 import { renderChat } from "./views/chat";
-import type { ChatProps } from "./views/chat";
 import { renderConfig } from "./views/config";
 import { renderCron } from "./views/cron";
 import { renderDebug } from "./views/debug";
@@ -529,11 +529,7 @@ export function renderApp(state: AppViewState) {
             : nothing
         }
 
-        ${
-          state.tab === "chat"
-            ? renderChat(chatProps)
-            : nothing
-        }
+        ${state.tab === "chat" ? renderChat(chatProps) : nothing}
 
         ${
           state.tab === "config"

@@ -157,9 +157,9 @@ openclaw-view-sentiment-monitor {
 
 /* 聊天占位 CTA */
 .chat-placeholder {
-  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08), transparent 35%),
-    radial-gradient(circle at 80% 10%, rgba(124, 58, 237, 0.06), transparent 30%),
-    var(--bg);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(124, 58, 237, 0.06), transparent 30%), var(--bg);
 }
 
 .chat-cta {
@@ -214,7 +214,9 @@ openclaw-view-sentiment-monitor {
   color: white;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+  transition:
+    transform 150ms var(--ease-out),
+    box-shadow 150ms var(--ease-out);
 }
 
 .chat-cta__primary:hover {

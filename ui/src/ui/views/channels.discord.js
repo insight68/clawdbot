@@ -2,8 +2,8 @@ import { html, nothing } from "lit";
 import { formatAgo } from "../format";
 import { renderChannelConfigSection } from "./channels.config";
 export function renderDiscordCard(params) {
-    const { props, discord, accountCountLabel } = params;
-    return html `
+  const { props, discord, accountCountLabel } = params;
+  return html`
     <div class="card">
       <div class="card-title">Discord</div>
       <div class="card-sub">Bot status and channel configuration.</div>
@@ -28,18 +28,22 @@ export function renderDiscordCard(params) {
         </div>
       </div>
 
-      ${discord?.lastError
-        ? html `<div class="callout danger" style="margin-top: 12px;">
+      ${
+        discord?.lastError
+          ? html`<div class="callout danger" style="margin-top: 12px;">
             ${discord.lastError}
           </div>`
-        : nothing}
+          : nothing
+      }
 
-      ${discord?.probe
-        ? html `<div class="callout" style="margin-top: 12px;">
+      ${
+        discord?.probe
+          ? html`<div class="callout" style="margin-top: 12px;">
             Probe ${discord.probe.ok ? "ok" : "failed"} ·
             ${discord.probe.status ?? ""} ${discord.probe.error ?? ""}
           </div>`
-        : nothing}
+          : nothing
+      }
 
       ${renderChannelConfigSection({ channelId: "discord", props })}
 

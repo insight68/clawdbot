@@ -253,10 +253,7 @@ type InjectPromptEventDetail = {
   displayName: string;
 };
 
-export function handleInjectPrompt(
-  host: InjectPromptHost,
-  detail: InjectPromptEventDetail,
-) {
+export function handleInjectPrompt(host: InjectPromptHost, detail: InjectPromptEventDetail) {
   const { prompt, displayName } = detail;
   if (!prompt.trim()) return;
 

@@ -2,20 +2,18 @@ import { html } from "lit";
 import { formatAgo, formatDurationMs } from "../format";
 import { formatNextRun } from "../presenter";
 export function renderOverview(props) {
-    const snapshot = props.hello?.snapshot;
-    const uptime = snapshot?.uptimeMs ? formatDurationMs(snapshot.uptimeMs) : "n/a";
-    const tick = snapshot?.policy?.tickIntervalMs ? `${snapshot.policy.tickIntervalMs}ms` : "n/a";
-    const authHint = (() => {
-        if (props.connected || !props.lastError)
-            return null;
-        const lower = props.lastError.toLowerCase();
-        const authFailed = lower.includes("unauthorized") || lower.includes("connect failed");
-        if (!authFailed)
-            return null;
-        const hasToken = Boolean(props.settings.token.trim());
-        const hasPassword = Boolean(props.password.trim());
-        if (!hasToken && !hasPassword) {
-            return html `
+  const snapshot = props.hello?.snapshot;
+  const uptime = snapshot?.uptimeMs ? formatDurationMs(snapshot.uptimeMs) : "n/a";
+  const tick = snapshot?.policy?.tickIntervalMs ? `${snapshot.policy.tickIntervalMs}ms` : "n/a";
+  const authHint = (() => {
+    if (props.connected || !props.lastError) return null;
+    const lower = props.lastError.toLowerCase();
+    const authFailed = lower.includes("unauthorized") || lower.includes("connect failed");
+    if (!authFailed) return null;
+    const hasToken = Boolean(props.settings.token.trim());
+    const hasPassword = Boolean(props.password.trim());
+    if (!hasToken && !hasPassword) {
+      return html`
         <div class="muted" style="margin-top: 8px">
           This gateway requires auth. Add a token or password, then click Connect.
           <div style="margin-top: 6px">
@@ -34,8 +32,8 @@ export function renderOverview(props) {
           </div>
         </div>
       `;
-        }
-        return html `
+    }
+    return html`
       <div class="muted" style="margin-top: 8px">
         Auth failed. Re-copy a tokenized URL with
         <span class="mono">openclaw dashboard --no-open</span>, or update the token, then click Connect.
@@ -51,18 +49,16 @@ export function renderOverview(props) {
         </div>
       </div>
     `;
-    })();
-    const insecureContextHint = (() => {
-        if (props.connected || !props.lastError)
-            return null;
-        const isSecureContext = typeof window !== "undefined" ? window.isSecureContext : true;
-        if (isSecureContext !== false)
-            return null;
-        const lower = props.lastError.toLowerCase();
-        if (!lower.includes("secure context") && !lower.includes("device identity required")) {
-            return null;
-        }
-        return html `
+  })();
+  const insecureContextHint = (() => {
+    if (props.connected || !props.lastError) return null;
+    const isSecureContext = typeof window !== "undefined" ? window.isSecureContext : true;
+    if (isSecureContext !== false) return null;
+    const lower = props.lastError.toLowerCase();
+    if (!lower.includes("secure context") && !lower.includes("device identity required")) {
+      return null;
+    }
+    return html`
       <div class="muted" style="margin-top: 8px">
         This page is HTTP, so the browser blocks device identity. Use HTTPS (Tailscale Serve) or open
         <span class="mono">http://127.0.0.1:18789</span> on the gateway host.
@@ -91,8 +87,8 @@ export function renderOverview(props) {
         </div>
       </div>
     `;
-    })();
-    return html `
+  })();
+  return html`
     <section class="grid grid-cols-2">
       <div class="card">
         <div class="card-title">Gateway Access</div>
@@ -103,9 +99,9 @@ export function renderOverview(props) {
             <input
               .value=${props.settings.gatewayUrl}
               @input=${(e) => {
-        const v = e.target.value;
-        props.onSettingsChange({ ...props.settings, gatewayUrl: v });
-    }}
+                const v = e.target.value;
+                props.onSettingsChange({ ...props.settings, gatewayUrl: v });
+              }}
               placeholder="ws://100.x.y.z:18789"
             />
           </label>
@@ -114,9 +110,9 @@ export function renderOverview(props) {
             <input
               .value=${props.settings.token}
               @input=${(e) => {
-        const v = e.target.value;
-        props.onSettingsChange({ ...props.settings, token: v });
-    }}
+                const v = e.target.value;
+                props.onSettingsChange({ ...props.settings, token: v });
+              }}
               placeholder="OPENCLAW_GATEWAY_TOKEN"
             />
           </label>
@@ -126,9 +122,9 @@ export function renderOverview(props) {
               type="password"
               .value=${props.password}
               @input=${(e) => {
-        const v = e.target.value;
-        props.onPasswordChange(v);
-    }}
+                const v = e.target.value;
+                props.onPasswordChange(v);
+              }}
               placeholder="system or shared password"
             />
           </label>
@@ -137,9 +133,9 @@ export function renderOverview(props) {
             <input
               .value=${props.settings.sessionKey}
               @input=${(e) => {
-        const v = e.target.value;
-        props.onSessionKeyChange(v);
-    }}
+                const v = e.target.value;
+                props.onSessionKeyChange(v);
+              }}
             />
           </label>
         </div>
@@ -175,17 +171,19 @@ export function renderOverview(props) {
             </div>
           </div>
         </div>
-        ${props.lastError
-        ? html `<div class="callout danger" style="margin-top: 14px;">
+        ${
+          props.lastError
+            ? html`<div class="callout danger" style="margin-top: 14px;">
               <div>${props.lastError}</div>
               ${authHint ?? ""}
               ${insecureContextHint ?? ""}
             </div>`
-        : html `
+            : html`
                 <div class="callout" style="margin-top: 14px">
                   Use Channels to link WhatsApp, Telegram, Discord, Signal, or iMessage.
                 </div>
-              `}
+              `
+        }
       </div>
     </section>
 

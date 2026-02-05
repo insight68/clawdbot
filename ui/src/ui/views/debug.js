@@ -1,16 +1,16 @@
 import { html, nothing } from "lit";
 import { formatEventPayload } from "../presenter";
 export function renderDebug(props) {
-    const securityAudit = props.status && typeof props.status === "object"
-        ? props.status.securityAudit
-        : null;
-    const securitySummary = securityAudit?.summary ?? null;
-    const critical = securitySummary?.critical ?? 0;
-    const warn = securitySummary?.warn ?? 0;
-    const info = securitySummary?.info ?? 0;
-    const securityTone = critical > 0 ? "danger" : warn > 0 ? "warn" : "success";
-    const securityLabel = critical > 0 ? `${critical} critical` : warn > 0 ? `${warn} warnings` : "No critical issues";
-    return html `
+  const securityAudit =
+    props.status && typeof props.status === "object" ? props.status.securityAudit : null;
+  const securitySummary = securityAudit?.summary ?? null;
+  const critical = securitySummary?.critical ?? 0;
+  const warn = securitySummary?.warn ?? 0;
+  const info = securitySummary?.info ?? 0;
+  const securityTone = critical > 0 ? "danger" : warn > 0 ? "warn" : "success";
+  const securityLabel =
+    critical > 0 ? `${critical} critical` : warn > 0 ? `${warn} warnings` : "No critical issues";
+  return html`
     <section class="grid grid-cols-2">
       <div class="card">
         <div class="row" style="justify-content: space-between;">
@@ -25,12 +25,14 @@ export function renderDebug(props) {
         <div class="stack" style="margin-top: 12px;">
           <div>
             <div class="muted">Status</div>
-            ${securitySummary
-        ? html `<div class="callout ${securityTone}" style="margin-top: 8px;">
+            ${
+              securitySummary
+                ? html`<div class="callout ${securityTone}" style="margin-top: 8px;">
                   Security audit: ${securityLabel}${info > 0 ? ` · ${info} info` : ""}. Run
                   <span class="mono">openclaw security audit --deep</span> for details.
                 </div>`
-        : nothing}
+                : nothing
+            }
             <pre class="code-block">${JSON.stringify(props.status ?? {}, null, 2)}</pre>
           </div>
           <div>
@@ -68,14 +70,18 @@ export function renderDebug(props) {
         <div class="row" style="margin-top: 12px;">
           <button class="btn primary" @click=${props.onCall}>Call</button>
         </div>
-        ${props.callError
-        ? html `<div class="callout danger" style="margin-top: 12px;">
+        ${
+          props.callError
+            ? html`<div class="callout danger" style="margin-top: 12px;">
               ${props.callError}
             </div>`
-        : nothing}
-        ${props.callResult
-        ? html `<pre class="code-block" style="margin-top: 12px;">${props.callResult}</pre>`
-        : nothing}
+            : nothing
+        }
+        ${
+          props.callResult
+            ? html`<pre class="code-block" style="margin-top: 12px;">${props.callResult}</pre>`
+            : nothing
+        }
       </div>
     </section>
 
@@ -88,13 +94,15 @@ export function renderDebug(props) {
     <section class="card" style="margin-top: 18px;">
       <div class="card-title">Event Log</div>
       <div class="card-sub">Latest gateway events.</div>
-      ${props.eventLog.length === 0
-        ? html `
+      ${
+        props.eventLog.length === 0
+          ? html`
               <div class="muted" style="margin-top: 12px">No events yet.</div>
             `
-        : html `
+          : html`
             <div class="list" style="margin-top: 12px;">
-              ${props.eventLog.map((evt) => html `
+              ${props.eventLog.map(
+                (evt) => html`
                   <div class="list-item">
                     <div class="list-main">
                       <div class="list-title">${evt.event}</div>
@@ -104,9 +112,11 @@ export function renderDebug(props) {
                       <pre class="code-block">${formatEventPayload(evt.payload)}</pre>
                     </div>
                   </div>
-                `)}
+                `,
+              )}
             </div>
-          `}
+          `
+      }
     </section>
   `;
 }

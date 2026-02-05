@@ -1,31 +1,33 @@
 import { html, nothing } from "lit";
 import { formatMs } from "../format";
-import { formatCronPayload, formatCronSchedule, formatCronState, formatNextRun, } from "../presenter";
+import {
+  formatCronPayload,
+  formatCronSchedule,
+  formatCronState,
+  formatNextRun,
+} from "../presenter";
 function buildChannelOptions(props) {
-    const options = ["last", ...props.channels.filter(Boolean)];
-    const current = props.form.channel?.trim();
-    if (current && !options.includes(current)) {
-        options.push(current);
-    }
-    const seen = new Set();
-    return options.filter((value) => {
-        if (seen.has(value))
-            return false;
-        seen.add(value);
-        return true;
-    });
+  const options = ["last", ...props.channels.filter(Boolean)];
+  const current = props.form.channel?.trim();
+  if (current && !options.includes(current)) {
+    options.push(current);
+  }
+  const seen = new Set();
+  return options.filter((value) => {
+    if (seen.has(value)) return false;
+    seen.add(value);
+    return true;
+  });
 }
 function resolveChannelLabel(props, channel) {
-    if (channel === "last")
-        return "last";
-    const meta = props.channelMeta?.find((entry) => entry.id === channel);
-    if (meta?.label)
-        return meta.label;
-    return props.channelLabels?.[channel] ?? channel;
+  if (channel === "last") return "last";
+  const meta = props.channelMeta?.find((entry) => entry.id === channel);
+  if (meta?.label) return meta.label;
+  return props.channelLabels?.[channel] ?? channel;
 }
 export function renderCron(props) {
-    const channelOptions = buildChannelOptions(props);
-    return html `
+  const channelOptions = buildChannelOptions(props);
+  return html`
     <section class="grid grid-cols-2">
       <div class="card">
         <div class="card-title">Scheduler</div>
@@ -50,7 +52,7 @@ export function renderCron(props) {
           <button class="btn" ?disabled=${props.loading} @click=${props.onRefresh}>
             ${props.loading ? "Refreshing…" : "Refresh"}
           </button>
-          ${props.error ? html `<span class="muted">${props.error}</span>` : nothing}
+          ${props.error ? html`<span class="muted">${props.error}</span>` : nothing}
         </div>
       </div>
 
@@ -92,10 +94,10 @@ export function renderCron(props) {
             <span>Schedule</span>
             <select
               .value=${props.form.scheduleKind}
-              @change=${(e) => props.onFormChange({
-        scheduleKind: e.target
-            .value,
-    })}
+              @change=${(e) =>
+                props.onFormChange({
+                  scheduleKind: e.target.value,
+                })}
             >
               <option value="every">Every</option>
               <option value="at">At</option>
@@ -109,10 +111,10 @@ export function renderCron(props) {
             <span>Session</span>
             <select
               .value=${props.form.sessionTarget}
-              @change=${(e) => props.onFormChange({
-        sessionTarget: e.target
-            .value,
-    })}
+              @change=${(e) =>
+                props.onFormChange({
+                  sessionTarget: e.target.value,
+                })}
             >
               <option value="main">Main</option>
               <option value="isolated">Isolated</option>
@@ -122,9 +124,10 @@ export function renderCron(props) {
             <span>Wake mode</span>
             <select
               .value=${props.form.wakeMode}
-              @change=${(e) => props.onFormChange({
-        wakeMode: e.target.value,
-    })}
+              @change=${(e) =>
+                props.onFormChange({
+                  wakeMode: e.target.value,
+                })}
             >
               <option value="next-heartbeat">Next heartbeat</option>
               <option value="now">Now</option>
@@ -134,10 +137,10 @@ export function renderCron(props) {
             <span>Payload</span>
             <select
               .value=${props.form.payloadKind}
-              @change=${(e) => props.onFormChange({
-        payloadKind: e.target
-            .value,
-    })}
+              @change=${(e) =>
+                props.onFormChange({
+                  payloadKind: e.target.value,
+                })}
             >
               <option value="systemEvent">System event</option>
               <option value="agentTurn">Agent turn</option>
@@ -148,37 +151,42 @@ export function renderCron(props) {
           <span>${props.form.payloadKind === "systemEvent" ? "System text" : "Agent message"}</span>
           <textarea
             .value=${props.form.payloadText}
-            @input=${(e) => props.onFormChange({
-        payloadText: e.target.value,
-    })}
+            @input=${(e) =>
+              props.onFormChange({
+                payloadText: e.target.value,
+              })}
             rows="4"
           ></textarea>
         </label>
-	          ${props.form.payloadKind === "agentTurn"
-        ? html `
+	          ${
+              props.form.payloadKind === "agentTurn"
+                ? html`
 	              <div class="form-grid" style="margin-top: 12px;">
                 <label class="field checkbox">
                   <span>Deliver</span>
                   <input
                     type="checkbox"
                     .checked=${props.form.deliver}
-                    @change=${(e) => props.onFormChange({
-            deliver: e.target.checked,
-        })}
+                    @change=${(e) =>
+                      props.onFormChange({
+                        deliver: e.target.checked,
+                      })}
                   />
 	                </label>
 	                <label class="field">
 	                  <span>Channel</span>
 	                  <select
 	                    .value=${props.form.channel || "last"}
-	                    @change=${(e) => props.onFormChange({
-            channel: e.target
-                .value,
-        })}
+	                    @change=${(e) =>
+                        props.onFormChange({
+                          channel: e.target.value,
+                        })}
 	                  >
-	                    ${channelOptions.map((channel) => html `<option value=${channel}>
+	                    ${channelOptions.map(
+                        (channel) => html`<option value=${channel}>
                             ${resolveChannelLabel(props, channel)}
-                          </option>`)}
+                          </option>`,
+                      )}
                   </select>
                 </label>
                 <label class="field">
@@ -193,27 +201,32 @@ export function renderCron(props) {
                   <span>Timeout (seconds)</span>
                   <input
                     .value=${props.form.timeoutSeconds}
-                    @input=${(e) => props.onFormChange({
-            timeoutSeconds: e.target.value,
-        })}
+                    @input=${(e) =>
+                      props.onFormChange({
+                        timeoutSeconds: e.target.value,
+                      })}
                   />
                 </label>
-                ${props.form.sessionTarget === "isolated"
-            ? html `
+                ${
+                  props.form.sessionTarget === "isolated"
+                    ? html`
                       <label class="field">
                         <span>Post to main prefix</span>
                         <input
                           .value=${props.form.postToMainPrefix}
-                          @input=${(e) => props.onFormChange({
-                postToMainPrefix: e.target.value,
-            })}
+                          @input=${(e) =>
+                            props.onFormChange({
+                              postToMainPrefix: e.target.value,
+                            })}
                         />
                       </label>
                     `
-            : nothing}
+                    : nothing
+                }
               </div>
             `
-        : nothing}
+                : nothing
+            }
         <div class="row" style="margin-top: 14px;">
           <button class="btn primary" ?disabled=${props.busy} @click=${props.onAdd}>
             ${props.busy ? "Saving…" : "Add job"}
@@ -225,71 +238,78 @@ export function renderCron(props) {
     <section class="card" style="margin-top: 18px;">
       <div class="card-title">Jobs</div>
       <div class="card-sub">All scheduled jobs stored in the gateway.</div>
-      ${props.jobs.length === 0
-        ? html `
+      ${
+        props.jobs.length === 0
+          ? html`
               <div class="muted" style="margin-top: 12px">No jobs yet.</div>
             `
-        : html `
+          : html`
             <div class="list" style="margin-top: 12px;">
               ${props.jobs.map((job) => renderJob(job, props))}
             </div>
-          `}
+          `
+      }
     </section>
 
     <section class="card" style="margin-top: 18px;">
       <div class="card-title">Run history</div>
       <div class="card-sub">Latest runs for ${props.runsJobId ?? "(select a job)"}.</div>
-      ${props.runsJobId == null
-        ? html `
+      ${
+        props.runsJobId == null
+          ? html`
               <div class="muted" style="margin-top: 12px">Select a job to inspect run history.</div>
             `
-        : props.runs.length === 0
-            ? html `
+          : props.runs.length === 0
+            ? html`
                 <div class="muted" style="margin-top: 12px">No runs yet.</div>
               `
-            : html `
+            : html`
               <div class="list" style="margin-top: 12px;">
                 ${props.runs.map((entry) => renderRun(entry))}
               </div>
-            `}
+            `
+      }
     </section>
   `;
 }
 function renderScheduleFields(props) {
-    const form = props.form;
-    if (form.scheduleKind === "at") {
-        return html `
+  const form = props.form;
+  if (form.scheduleKind === "at") {
+    return html`
       <label class="field" style="margin-top: 12px;">
         <span>Run at</span>
         <input
           type="datetime-local"
           .value=${form.scheduleAt}
-          @input=${(e) => props.onFormChange({
-            scheduleAt: e.target.value,
-        })}
+          @input=${(e) =>
+            props.onFormChange({
+              scheduleAt: e.target.value,
+            })}
         />
       </label>
     `;
-    }
-    if (form.scheduleKind === "every") {
-        return html `
+  }
+  if (form.scheduleKind === "every") {
+    return html`
       <div class="form-grid" style="margin-top: 12px;">
         <label class="field">
           <span>Every</span>
           <input
             .value=${form.everyAmount}
-            @input=${(e) => props.onFormChange({
-            everyAmount: e.target.value,
-        })}
+            @input=${(e) =>
+              props.onFormChange({
+                everyAmount: e.target.value,
+              })}
           />
         </label>
         <label class="field">
           <span>Unit</span>
           <select
             .value=${form.everyUnit}
-            @change=${(e) => props.onFormChange({
-            everyUnit: e.target.value,
-        })}
+            @change=${(e) =>
+              props.onFormChange({
+                everyUnit: e.target.value,
+              })}
           >
             <option value="minutes">Minutes</option>
             <option value="hours">Hours</option>
@@ -298,8 +318,8 @@ function renderScheduleFields(props) {
         </label>
       </div>
     `;
-    }
-    return html `
+  }
+  return html`
     <div class="form-grid" style="margin-top: 12px;">
       <label class="field">
         <span>Expression</span>
@@ -319,15 +339,15 @@ function renderScheduleFields(props) {
   `;
 }
 function renderJob(job, props) {
-    const isSelected = props.runsJobId === job.id;
-    const itemClass = `list-item list-item-clickable${isSelected ? " list-item-selected" : ""}`;
-    return html `
+  const isSelected = props.runsJobId === job.id;
+  const itemClass = `list-item list-item-clickable${isSelected ? " list-item-selected" : ""}`;
+  return html`
     <div class=${itemClass} @click=${() => props.onLoadRuns(job.id)}>
       <div class="list-main">
         <div class="list-title">${job.name}</div>
         <div class="list-sub">${formatCronSchedule(job)}</div>
         <div class="muted">${formatCronPayload(job)}</div>
-        ${job.agentId ? html `<div class="muted">Agent: ${job.agentId}</div>` : nothing}
+        ${job.agentId ? html`<div class="muted">Agent: ${job.agentId}</div>` : nothing}
         <div class="chip-row" style="margin-top: 6px;">
           <span class="chip">${job.enabled ? "enabled" : "disabled"}</span>
           <span class="chip">${job.sessionTarget}</span>
@@ -341,9 +361,9 @@ function renderJob(job, props) {
             class="btn"
             ?disabled=${props.busy}
             @click=${(event) => {
-        event.stopPropagation();
-        props.onToggle(job, !job.enabled);
-    }}
+              event.stopPropagation();
+              props.onToggle(job, !job.enabled);
+            }}
           >
             ${job.enabled ? "Disable" : "Enable"}
           </button>
@@ -351,9 +371,9 @@ function renderJob(job, props) {
             class="btn"
             ?disabled=${props.busy}
             @click=${(event) => {
-        event.stopPropagation();
-        props.onRun(job);
-    }}
+              event.stopPropagation();
+              props.onRun(job);
+            }}
           >
             Run
           </button>
@@ -361,9 +381,9 @@ function renderJob(job, props) {
             class="btn"
             ?disabled=${props.busy}
             @click=${(event) => {
-        event.stopPropagation();
-        props.onLoadRuns(job.id);
-    }}
+              event.stopPropagation();
+              props.onLoadRuns(job.id);
+            }}
           >
             Runs
           </button>
@@ -371,9 +391,9 @@ function renderJob(job, props) {
             class="btn danger"
             ?disabled=${props.busy}
             @click=${(event) => {
-        event.stopPropagation();
-        props.onRemove(job);
-    }}
+              event.stopPropagation();
+              props.onRemove(job);
+            }}
           >
             Remove
           </button>
@@ -383,7 +403,7 @@ function renderJob(job, props) {
   `;
 }
 function renderRun(entry) {
-    return html `
+  return html`
     <div class="list-item">
       <div class="list-main">
         <div class="list-title">${entry.status}</div>
@@ -392,7 +412,7 @@ function renderRun(entry) {
       <div class="list-meta">
         <div>${formatMs(entry.ts)}</div>
         <div class="muted">${entry.durationMs ?? 0}ms</div>
-        ${entry.error ? html `<div class="muted">${entry.error}</div>` : nothing}
+        ${entry.error ? html`<div class="muted">${entry.error}</div>` : nothing}
       </div>
     </div>
   `;

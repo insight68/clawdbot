@@ -1,4 +1,5 @@
 import type { Tab } from "./navigation";
+import { handleInjectPrompt } from "./app-chat";
 import { connectGateway } from "./app-gateway";
 import {
   startLogsPolling,
@@ -17,7 +18,6 @@ import {
   syncTabWithLocation,
   syncThemeWithSettings,
 } from "./app-settings";
-import { handleInjectPrompt } from "./app-chat";
 
 type LifecycleHost = {
   basePath: string;
@@ -45,7 +45,11 @@ export function handleConnected(host: LifecycleHost) {
 
   // Set up inject-prompt event handler
   host.injectPromptHandler = (event: Event) => {
-    const customEvent = event as CustomEvent<{ prompt: string; skillKey: string; displayName: string }>;
+    const customEvent = event as CustomEvent<{
+      prompt: string;
+      skillKey: string;
+      displayName: string;
+    }>;
     if (customEvent.detail) {
       handleInjectPrompt(
         host as unknown as Parameters<typeof handleInjectPrompt>[0],

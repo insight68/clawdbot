@@ -181,7 +181,9 @@ export class HomeView extends LitElement {
 
   render() {
     if (this.loading) {
-      return html`<div class="home-loading">Loading...</div>`;
+      return html`
+        <div class="home-loading">Loading...</div>
+      `;
     }
 
     return html`
@@ -237,7 +239,15 @@ export class HomeView extends LitElement {
                   />
                   <span class="todo-category">${this.getCategoryIcon(todo.category)}</span>
                   <span class="todo-text">${todo.text}</span>
-                  ${todo.done ? html`<span class="todo-status">✓</span>` : html`<span class="todo-status"></span>`}
+                  ${
+                    todo.done
+                      ? html`
+                          <span class="todo-status">✓</span>
+                        `
+                      : html`
+                          <span class="todo-status"></span>
+                        `
+                  }
                 </li>
               `,
             )}
@@ -272,18 +282,6 @@ export class HomeView extends LitElement {
           </div>
         </section>
 
-        <!-- 底部聊天 CTA -->
-        <section class="chat-dock">
-          <div class="chat-dock__content">
-            <div>
-              <div class="chat-dock__title">立即开聊</div>
-              <div class="chat-dock__desc">继续你的上下文，或开始一个新的对话。</div>
-            </div>
-            <button class="chat-dock__btn" @click=${() => (window.location.href = "/chat")}>
-              打开聊天
-            </button>
-          </div>
-        </section>
       </div>
     `;
   }

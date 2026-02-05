@@ -45,10 +45,12 @@ export const RemotionRoot = () => {
       fps={30}
       width={1080}
       height={1080}
-      defaultProps={{
-        title: "Hello World",
-        color: "#ff0000",
-      } satisfies MyCompositionProps}
+      defaultProps={
+        {
+          title: "Hello World",
+          color: "#ff0000",
+        } satisfies MyCompositionProps
+      }
     />
   );
 };
@@ -91,14 +93,7 @@ import { Still } from "remotion";
 import { Thumbnail } from "./Thumbnail";
 
 export const RemotionRoot = () => {
-  return (
-    <Still
-      id="Thumbnail"
-      component={Thumbnail}
-      width={1280}
-      height={720}
-    />
-  );
+  return <Still id="Thumbnail" component={Thumbnail} width={1280} height={720} />;
 };
 ```
 
