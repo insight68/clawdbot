@@ -1,14 +1,15 @@
 /**
- * Home Page Styles
- *
- * 大气简洁的首页样式设计
+ * Home Page Styles - 欢迎、最新任务、待办、常用与聊天 CTA
  */
 
-/* ========== 首页容器 ========== */
+/* ========== 容器与通用 ========== */
 .home-container {
   padding: var(--space-3xl) var(--space-2xl);
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 1280px;
+  margin: 0 auto var(--space-3xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
   animation: fade-slide-up 0.6s var(--ease-out);
 }
 
@@ -21,117 +22,152 @@
   font-family: var(--font-body);
 }
 
-/* ========== 欢迎区域 ========== */
+/* ========== 欢迎区 ========== */
 .welcome-section {
-  margin-bottom: var(--space-3xl);
-  animation: rise 0.6s var(--ease-out);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.welcome-meta {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.welcome-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xxs) var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-size: 0.8rem;
 }
 
 .welcome-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 800;
   color: var(--text-strong);
-  margin: 0 0 var(--space-sm) 0;
+  margin: 0;
   letter-spacing: -0.02em;
-  line-height: 1.2;
 }
 
 .welcome-subtitle {
   font-family: var(--font-body);
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--muted);
   margin: 0;
-  font-weight: 400;
+  line-height: 1.6;
 }
 
-/* ========== 进度卡片区域 ========== */
-.progress-section {
+/* ========== 摘要卡片 ========== */
+.summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-lg);
-  margin-bottom: var(--space-3xl);
 }
 
-@media (max-width: 768px) {
-  .progress-section {
-    grid-template-columns: 1fr;
-  }
-
-  .home-container {
-    padding: var(--space-xl) var(--space-md);
-  }
-}
-
-.stat-card {
+.card {
   background: var(--card);
-  padding: var(--space-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--duration-normal) var(--ease-out);
   border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  gap: var(--space-sm);
 }
 
-.stat-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  opacity: 0;
-  transition: opacity var(--duration-normal) var(--ease-out);
+.card-badge {
+  display: inline-flex;
+  padding: var(--space-xxs) var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--bg-hover);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.stat-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
-  border-color: var(--accent);
+.card-badge.accent {
+  background: var(--accent-subtle);
+  color: var(--accent);
 }
 
-.stat-card:hover::before {
-  opacity: 1;
-}
-
-.stat-icon {
-  font-size: 2rem;
-  margin-bottom: var(--space-md);
-  opacity: 0.8;
-}
-
-.stat-value {
-  font-family: var(--font-display);
-  font-size: 2.5rem;
+.card-title {
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-strong);
-  margin-bottom: var(--space-xs);
-  line-height: 1;
+  margin: 0;
 }
 
-.stat-label {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
+.card-time {
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
+  font-size: 0.9rem;
 }
 
-/* ========== 待办事项区域 ========== */
-.todos-section {
+.card-desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.top-task-row {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.top-task-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-hover);
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+.card-button {
+  margin-top: var(--space-sm);
+  align-self: flex-start;
+  padding: 0 var(--space-lg);
+  height: 40px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2, #7c3aed) 100%);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.card-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.card-button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.2);
+}
+
+/* ========== 待办 ========== */
+todos-section {
   background: var(--card);
   padding: var(--space-xl);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
-  margin-bottom: var(--space-3xl);
 }
 
 .section-header {
@@ -143,8 +179,8 @@
 
 .section-header h2 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.4rem;
+  font-weight: 700;
   margin: 0;
   color: var(--text-strong);
 }
@@ -152,67 +188,47 @@
 .section-badge {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-xxs) var(--space-sm);
   background: var(--accent-subtle);
   color: var(--accent);
   border-radius: var(--radius-full);
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.section-link {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color var(--duration-fast) var(--ease-out);
-}
-
-.section-link:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 .todo-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .todo-item {
   display: flex;
   align-items: center;
   padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-lg);
   transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
+  border: 1px solid transparent;
 }
 
 .todo-item:hover {
   background: var(--bg-hover);
-}
-
-.todo-item:last-child {
-  margin-bottom: 0;
+  border-color: var(--border);
 }
 
 .todo-item.done {
-  opacity: 0.6;
-}
-
-.todo-item.done .todo-text {
-  text-decoration: line-through;
+  opacity: 0.65;
 }
 
 .todo-item input[type="checkbox"] {
   appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.2rem;
+  height: 1.2rem;
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   margin-right: var(--space-md);
@@ -234,12 +250,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: bold;
-}
-
-.todo-item input[type="checkbox"]:focus-visible {
-  box-shadow: var(--focus-ring);
 }
 
 .todo-category {
@@ -250,38 +262,41 @@
 
 .todo-text {
   font-family: var(--font-body);
-  font-size: 0.9375rem;
+  font-size: 0.95rem;
   color: var(--text);
   flex: 1;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .todo-status {
   font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: var(--ok);
-  font-weight: 600;
+  font-weight: 700;
   margin-left: var(--space-sm);
 }
 
-/* ========== 最近技能区域 ========== */
+/* ========== 最近使用 ========== */
 .skills-section {
-  animation: rise 0.6s var(--ease-out) 0.2s both;
+  background: var(--card);
+  padding: var(--space-xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--space-md);
 }
 
 .skill-card {
   display: flex;
   align-items: center;
-  background: var(--card);
+  background: var(--bg);
   padding: var(--space-lg);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   transition: all var(--duration-normal) var(--ease-out);
   cursor: pointer;
@@ -289,31 +304,10 @@
   overflow: hidden;
 }
 
-.skill-card::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--accent);
-  transform: scaleY(0);
-  transition: transform var(--duration-normal) var(--ease-out);
-}
-
 .skill-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateX(4px);
   border-color: var(--accent);
-}
-
-.skill-card:hover::before {
-  transform: scaleY(1);
-}
-
-.skill-card:focus-visible {
-  box-shadow: var(--focus-ring);
-  outline: none;
 }
 
 .skill-icon {
@@ -328,19 +322,17 @@
 }
 
 .skill-name {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.9375rem;
+  font-weight: 700;
+  font-size: 1rem;
   color: var(--text-strong);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-xxs);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .skill-time {
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
@@ -348,7 +340,7 @@
   font-size: 1rem;
   color: var(--accent);
   opacity: 0;
-  transform: translateX(-8px);
+  transform: translateX(-6px);
   transition: all var(--duration-normal) var(--ease-out);
 }
 
@@ -357,32 +349,78 @@
   transform: translateX(0);
 }
 
-/* ========== 响应式调整 ========== */
-@media (max-width: 640px) {
-  .welcome-title {
-    font-size: 2rem;
+/* ========== 底部聊天 CTA ========== */
+.chat-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-top: auto;
+  padding: var(--space-lg) 0;
+}
+
+.chat-dock__content {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(124, 58, 237, 0.08));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.chat-dock__title {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--text-strong);
+}
+
+.chat-dock__desc {
+  color: var(--muted);
+  margin-top: var(--space-xxs);
+}
+
+.chat-dock__btn {
+  height: 44px;
+  padding: 0 var(--space-xl);
+  border-radius: var(--radius-full);
+  border: none;
+  background: #fff;
+  color: var(--accent);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.chat-dock__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.25);
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 960px) {
+  .home-container {
+    padding: var(--space-2xl) var(--space-lg);
   }
 
-  .stat-value {
-    font-size: 2rem;
+  .chat-dock__content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-container {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .skills-grid {
     grid-template-columns: 1fr;
   }
-}
-
-/* ========== 深色主题调整 ========== */
-:root[data-theme="dark"] .stat-card,
-:root[data-theme="dark"] .todos-section,
-:root[data-theme="dark"] .skill-card {
-  background: var(--bg-elevated);
-}
-
-/* ========== 浅色主题调整 ========== */
-:root[data-theme="light"] .stat-card,
-:root[data-theme="light"] .todos-section,
-:root[data-theme="light"] .skill-card {
-  background: var(--bg-elevated);
-  box-shadow: var(--shadow-sm);
 }
