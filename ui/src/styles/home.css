@@ -162,7 +162,7 @@
 }
 
 /* ========== 待办 ========== */
-todos-section {
+.todos-section {
   background: var(--card);
   padding: var(--space-xl);
   border-radius: var(--radius-xl);
@@ -195,6 +195,20 @@ todos-section {
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.03em;
+}
+
+.section-link {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.section-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 .todo-list {
