@@ -111,7 +111,7 @@ export class GatewayBrowserClient {
   }
 
   private scheduleReconnect() {
-    if (this.closed) return;
+    if (this.closed || typeof window === 'undefined') return;
     const delay = this.backoffMs;
     this.backoffMs = Math.min(this.backoffMs * 1.7, 15_000);
     window.setTimeout(() => this.connect(), delay);

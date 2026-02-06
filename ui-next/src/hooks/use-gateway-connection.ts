@@ -20,6 +20,10 @@ export function useGatewayConnection(options: UseGatewayConnectionOptions) {
   const [error, setError] = useState<Error | null>(null);
   const [hello, setHello] = useState<GatewayHelloOk | null>(null);
 
+  // Use ref to keep callbacks stable without triggering re-renders
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
   useEffect(() => {
     // Only create client in browser environment
     if (typeof window === 'undefined') return;
@@ -33,15 +37,15 @@ export function useGatewayConnection(options: UseGatewayConnectionOptions) {
         setConnected(true);
         setConnecting(false);
         setError(null);
-        options.onHello?.(hello);
+        optionsRef.current.onHello?.(hello);
       },
       onEvent: (evt) => {
-        options.onEvent?.(evt);
+        optionsRef.current.onEvent?.(evt);
       },
       onClose: (info) => {
         setConnected(false);
         setConnecting(false);
-        options.onClose?.(info);
+        optionsRef.current.onClose?.(info);
       },
     });
 
