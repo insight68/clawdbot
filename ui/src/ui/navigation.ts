@@ -18,6 +18,7 @@ export const TAB_GROUPS = [
     label: "AI助理",
     tabs: [
       "marketing",
+      "legal",
       "data-processing",
       "market-analysis",
       "customer-service",
@@ -43,6 +44,7 @@ export type Tab =
   | "ai-assistant"
   // AI助手子页面
   | "marketing"
+  | "legal"
   | "data-processing"
   | "market-analysis"
   | "customer-service"
@@ -65,6 +67,7 @@ const TAB_PATHS: Record<Tab, string> = {
   "ai-assistant": "/ai-assistant",
   // AI助手子页面
   marketing: "/marketing",
+  legal: "/legal",
   "data-processing": "/data-processing",
   "market-analysis": "/market-analysis",
   "customer-service": "/customer-service",
@@ -160,6 +163,8 @@ export function iconForTab(tab: Tab): IconName {
     // AI助手子页面
     case "marketing":
       return "megaphone";
+    case "legal":
+      return "scale";
     case "data-processing":
       return "database";
     case "market-analysis":
@@ -204,6 +209,8 @@ export function titleForTab(tab: Tab) {
     // AI助手子页面
     case "marketing":
       return "广告营销";
+    case "legal":
+      return "法务合同";
     case "data-processing":
       return "数据处理";
     case "market-analysis":
@@ -248,6 +255,8 @@ export function subtitleForTab(tab: Tab) {
     // AI助手子页面
     case "marketing":
       return "营销活动策划、内容生成和效果分析";
+    case "legal":
+      return "合同审核、合规审查和法律风险评估";
     case "data-processing":
       return "数据处理、清洗和转换工具";
     case "market-analysis":

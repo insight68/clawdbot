@@ -90,6 +90,7 @@ import { renderSessions } from "./views/sessions";
 import { renderSkills } from "./views/skills";
 import "./views/home";
 import "./views/marketing";
+import "./views/legal";
 import "./views/data-processing";
 import "./views/customer-service";
 import "./views/brand-management";
@@ -596,6 +597,18 @@ export function renderApp(state: AppViewState) {
                   .chatProps=${chatProps}
                   .renderChat=${renderChat}
                 ></openclaw-view-marketing>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "legal"
+            ? html`
+                <openclaw-view-legal
+                  .skillsReport=${state.skillsReport}
+                  .chatProps=${chatProps}
+                  .renderChat=${renderChat}
+                ></openclaw-view-legal>
               `
             : nothing
         }
