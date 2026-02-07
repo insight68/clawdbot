@@ -2,228 +2,184 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## 项目概述
 
-This is the **Next.js 16** implementation of the OpenClaw Control UI, migrated from the original Lit-based version (original backed up to `../ui_backup/`). This is a client-side React application that communicates with the OpenClaw Gateway via WebSocket.
+这是 OpenClaw 项目的 Control UI 子项目，一个基于 Web 的控制界面，用于管理 OpenClaw Gateway、频道、会话、技能等核心功能。
 
-**Technology Stack:**
+**技术栈：**
 
-- **Framework:** Next.js 16 with App Router and Turbopack
-- **Runtime:** React 19.2.3
-- **State Management:** Zustand with LocalStorage persistence
-- **Styling:** CSS variables (migrated from original), planned Tailwind CSS 4
-- **Theming:** next-themes for dark/light/system mode switching
-- **Type System:** TypeScript with strict mode
+- **前端框架：** Lit (Web Components)
+- **构建工具：** Vite
+- **测试框架：** Vitest + Playwright (浏览器测试)
+- **样式：** 原生 CSS (无 CSS 框架)
+- **类型系统：** TypeScript
 
-**Key Architectural Constraint:**
-All Gateway communication requires browser-only APIs (WebSocket, crypto.subtle for Ed25519). This means **all Gateway-integrated pages must be Client Components** (`'use client'` directive). Server Components can only be used for static pages (docs, marketing) that don't require Gateway access.
+## 开发命令
 
-## Development Commands
+### 日常开发
 
 ```bash
-# From ui directory:
-pnpm install          # Install dependencies (from project root)
-pnpm dev              # Start dev server (http://localhost:3001)
-pnpm build            # Production build
-pnpm start            # Start production server
-pnpm lint             # Run ESLint
+# 安装依赖 (必须使用 pnpm)
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+
+# 构建生产版本
+pnpm build
+
+# 预览构建结果
+pnpm preview
+
+# 运行测试
+pnpm test
 ```
 
-**Note:** This project is part of a monorepo. The root package.json manages the workspace, but ui has its own package.json for Next.js-specific dependencies.
+### 单独运行测试
 
-## Project Architecture
+```bash
+# 运行所有测试
+pnpm test
 
-### Directory Structure
+# 运行特定测试文件
+pnpm test src/ui/controllers/chat.test.ts
 
-```
-ui/
-├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── (console)/          # Route group for console pages (Client Components)
-│   │   │   ├── layout.tsx      # Console layout with navigation
-│   │   │   ├── chat/page.tsx   # Chat interface
-│   │   │   ├── config/page.tsx # Configuration editor
-│   │   │   └── ...             # Other console pages
-│   │   ├── layout.tsx          # Root layout with Providers
-│   │   ├── page.tsx            # Homepage
-│   │   ├── globals.css        # Global styles with CSS variables
-│   │   └── test/page.tsx       # Gateway connection testing
-│   ├── components/            # React components
-│   │   ├── providers.tsx      # Combines ThemeProvider + GatewayProvider
-│   │   ├── theme-provider.tsx # next-themes wrapper
-│   │   └── navigation.tsx     # Tab-based navigation
-│   ├── contexts/              # React Context providers
-│   │   └── gateway-context.tsx # Gateway instance sharing
-│   ├── hooks/                 # Custom React hooks
-│   │   └── use-gateway-connection.ts # Gateway lifecycle management
-│   ├── lib/                   # Core libraries (migrated from ../ui/)
-│   │   ├── gateway.ts         # WebSocket client (GatewayBrowserClient)
-│   │   ├── device-identity.ts # Ed25519 key pair management
-│   │   ├── device-auth.ts     # Device authentication & token storage
-│   │   ├── browser.ts         # SSR compatibility utilities
-│   │   └── navigation.ts      # Navigation constants
-│   └── store/                 # Zustand state management
-│       ├── use-ui-store.ts    # UI state (theme, navigation, gatewayUrl)
-│       └── use-chat-store.ts  # Chat state (messages, sessions, drafts)
-├── public/                    # Static assets
-├── next.config.ts            # Next.js configuration
-└── tsconfig.json             # TypeScript configuration
+# 测试监听模式
+pnpm test --watch
 ```
 
-### Gateway Integration Architecture
+## 代码架构
 
-The Gateway integration follows a **client-first pattern**:
+### 核心文件结构
 
-1. **GatewayBrowserClient** (`src/lib/gateway.ts`)
-   - Core WebSocket client with auto-reconnect
-   - Manages pending request map for request/response correlation
-   - Handles Ed25519 device authentication via crypto.subtle
-   - Emits events: `hello-ok`, `event` frames, connection close
-
-2. **useGatewayConnection Hook** (`src/hooks/use-gateway-connection.ts`)
-   - React lifecycle wrapper around GatewayBrowserClient
-   - Manages client creation/destruction in useEffect
-   - Uses useRef for callbacks to prevent stale closures
-   - Returns: `{ client, connected, connecting, error, hello, request }`
-
-3. **GatewayProvider** (`src/contexts/gateway-context.tsx`)
-   - React Context provider that shares Gateway instance
-   - Reads `gatewayUrl` from useUIStore
-   - Provides `useGateway()` hook for components
-   - All Gateway-integrated components must use this hook
-
-4. **Browser API Safety**
-   - `canUseBrowserAPI()` checks for window/document/localStorage/WebSocket
-   - Gateway client only instantiated in browser (check in hook)
-   - crypto.subtle availability checked before device identity operations
-
-### State Management (Zustand)
-
-**UI Store** (`src/store/use-ui-store.ts`):
-
-- `theme`: 'light' | 'dark' | 'system'
-- `chatFocusMode`, `chatShowThinking`: Chat UI flags
-- `navCollapsed`, `navGroupsCollapsed`: Navigation state
-- `gatewayUrl`: WebSocket URL (persisted to localStorage)
-- Persisted to `openclaw-ui-storage` localStorage key
-
-**Chat Store** (`src/store/use-chat-store.ts`):
-
-- `sessionKey`, `sessions`: Session management
-- `messages`, `toolMessages`: Message arrays
-- `stream`, `streamStartedAt`: Streaming state
-- `draft`, `attachments`: Compose state
-- `sidebarOpen`, `sidebarContent`: Markdown sidebar
-- Persisted to `openclaw-chat-storage` localStorage key (partial - only sessionKey)
-
-### Navigation System
-
-Tab-based navigation with grouped tabs:
-
-- **Main tabs:** chat, home, statistics, docs
-- **AI Assistant tabs:** marketing, data-processing, market-analysis, customer-service, brand-management, sentiment-monitor
-- **Config tabs:** config, channels, instances, sessions, skills, logs
-
-Navigation uses Next.js App Router with file-based routing. The `(console)` route group wraps all console pages with the navigation layout.
-
-### Theming System
-
-Uses CSS variables defined in `src/app/globals.css`:
-
-- Dark theme (default): `--bg: #12141a`, `--text: #e4e4e7`, `--accent: #3b82f6`
-- Light theme: `--bg: #ffffff`, `--text: #18181b`, `--accent: #3b82f6`
-- Theme switching via next-themes with `data-theme` attribute
-
-### Gateway Communication Protocol
-
-The Gateway speaks a custom WebSocket protocol:
-
-**Connection Flow:**
-
-1. WebSocket connects
-2. Client sends `connect` method with device auth (Ed25519 signature)
-3. Gateway responds with `hello-ok` containing auth token and capabilities
-4. Client stores device token for next connection
-
-**Request/Response:**
-
-- Frame type `req`: `{ type, id, method, params }`
-- Frame type `res`: `{ type, id, ok, payload, error }`
-
-**Events:**
-
-- Frame type `event`: `{ type, event, payload, seq, stateVersion }`
-- `connect.challenge`: Nonce for device auth replay protection
-
-## Important Implementation Notes
-
-### SSR Compatibility
-
-When working with Gateway-integrated code:
-
-1. **Always add `'use client'` directive** at the top of files that use Gateway
-2. **Check `typeof window === 'undefined'`** before using browser APIs in lib files
-3. **Never call Gateway methods in Server Components** - they will crash
-4. **Use conditional rendering** for SSR-safe fallbacks:
-   ```tsx
-   {
-     typeof window !== "undefined" && <ClientComponent />;
-   }
-   ```
-
-### Callback Stability in Hooks
-
-The `useGatewayConnection` hook uses useRef to store callbacks and prevent recreation on every render:
-
-```typescript
-const optionsRef = useRef(options);
-optionsRef.current = options;
+```
+src/
+├── main.ts/js              # 应用入口点
+├── styles.css              # 全局样式入口
+├── ui/
+│   ├── app.ts/js           # 主应用组件 (<openclaw-app>)
+│   ├── gateway.ts/js       # WebSocket 网关客户端
+│   ├── navigation.ts/js    # 路由和标签页导航
+│   ├── presenter.ts/js     # 数据格式化工具
+│   ├── types.ts/js         # TypeScript 类型定义
+│   ├── app-*.ts/js         # 应用功能模块 (chat, channels, settings 等)
+│   ├── controllers/        # 业务逻辑控制器
+│   ├── views/              # 页面视图组件
+│   ├── chat/               # 聊天相关功能
+│   └── components/         # 可复用组件
+├── styles/                 # CSS 样式文件
+├── config/                 # 配置文件
+└── styles.css              # 样式入口
 ```
 
-This pattern allows callbacks to always access the latest options without triggering effect re-runs.
+### 应用程序架构模式
 
-### Memory Management
+**主应用组件 (`src/ui/app.ts`)**
 
-- Gateway client is cleaned up in useEffect return function
-- `client.stop()` closes WebSocket and flushes pending requests
-- `clientRef.current = null` prevents dangling references
+- `<openclaw-app>` 是根 LitElement 自定义元素
+- 使用 `@state()` 装饰器管理响应式状态
+- 将大型应用拆分为多个独立文件进行组织：
+  - `app-channels.ts/js` - 频道配置逻辑
+  - `app-settings.ts/js` - 设置和应用状态
+  - `app-scroll.ts/js` - 滚动处理
+  - `app-lifecycle.ts/js` - 生命周期钩子
+  - `app-render.ts/js` - 渲染逻辑
 
-### Migration from Original Lit UI
+**网关通信 (`src/ui/gateway.ts`)**
 
-This implementation was migrated from the original Lit + Vite version (now in `../ui_backup/`). Key changes:
+- `GatewayBrowserClient` 类管理 WebSocket 连接
+- 支持设备身份验证和令牌存储
+- 实现自动重连和指数退避
+- 请求/响应模式 + 事件流
 
-- **LitElement → React Components:** Custom elements become React components
-- **@state() decorators → Zustand stores:** Reactive state moved to global state
-- **Controllers → Hooks:** Business logic migrated to custom hooks
-- **Views → App Router pages:** Page components moved to `app/` directory
-- **CSS architecture preserved:** CSS variables and styling system maintained
+**导航系统 (`src/ui/navigation.ts`)**
 
-## Known Limitations
+- 基于 URL 路径的标签页路由
+- `TAB_GROUPS` 定义导航分组结构
+- `pathForTab()` / `tabFromPath()` 处理路径映射
+- 支持基础路径配置 (用于子目录部署)
 
-1. **Inline styles in chat page** - Should be converted to CSS classes for better maintainability
-2. **No streaming event handling** - Chat page doesn't yet handle Gateway streaming events
-3. **No error boundaries** - App-wide error boundary not yet implemented
-4. **Limited testing** - No test files yet (original Lit version in `../ui_backup/` has Vitest + Playwright tests)
+**控制器模式 (`src/ui/controllers/`)**
 
-## Working with This Codebase
+- 分离业务逻辑与 UI 组件
+- 每个控制器处理特定领域：chat、config、channels、sessions 等
+- 控制器函数接受应用状态对象作为参数
 
-When modifying Gateway integration:
+### CSS 架构
 
-- Test in browser environment only (Gateway won't connect in SSR)
-- Check both dark and light themes for visual consistency
-- Verify localStorage persistence works across page reloads
-- Test reconnection scenarios (Gateway restart, network changes)
+样式按功能模块组织在 `src/styles/`：
 
-When adding new pages:
+- `base.css` - 基础样式和 CSS 变量
+- `layout.css` - 布局样式
+- `navigation.css` - 导航样式
+- `chat/` - 聊天相关样式子目录
+- `*.css` - 特定页面样式
 
-- Use `(console)` route group for Gateway-integrated pages
-- Add to `TAB_GROUPS` in `src/lib/navigation.ts` for navigation
-- Include in `titleForTab()` and `subtitleForTab()` functions
-- Mark with `'use client'` if using Gateway hooks
+### 聊天功能
 
-When debugging connection issues:
+聊天功能模块化组织：
 
-- Check browser console for `[GatewayProvider]` log messages
-- Verify `gatewayUrl` in localStorage (`openclaw-ui-storage` key)
-- Check Network tab for WebSocket connection status
-- Look for device auth tokens in localStorage (`openclaw-device-identity-v1`)
+- `src/ui/controllers/chat.ts` - 聊天控制器 (发送消息、历史记录)
+- `src/ui/chat/` - 聊天工具函数：
+  - `message-extract.ts` - 消息文本提取
+  - `message-normalizer.ts` - 消息规范化
+  - `tool-cards.ts` - 工具调用卡片
+  - `grouped-render.ts` - 分组渲染
+- `src/ui/views/chat.ts` - 聊天页面视图
+
+### 视图页面
+
+所有页面视图在 `src/ui/views/`：
+
+- `chat.ts/js` - 聊天页面
+- `home.ts/js` - 首页
+- `config.ts/js` - 配置页面
+- `channels.ts/js` - 频道管理
+- `sessions.ts/js` - 会话管理
+- `skills.ts/js` - 技能管理
+- `logs.ts/js` - 日志查看
+- 等等...
+
+### 类型定义
+
+- `src/ui/types.ts` - 主要类型定义
+- `src/ui/ui-types.ts` - UI 特定类型
+- `src/ui/types/chat-types.ts` - 聊天相关类型
+
+## Lit 组件约定
+
+- 使用 `@customElement()` 装饰器注册自定义元素
+- 使用 `@state()` 管理组件内部响应式状态
+- `createRenderRoot()` 返回 `this` 以使用 Shadow DOM 外的样式
+- 事件处理器命名为 `handle*` (如 `handleChatScroll`)
+- 异步操作方法使用 `async *()` 前缀 (如 `async loadChatHistory()`)
+
+## 网关协议
+
+应用通过 WebSocket 与 OpenClaw Gateway 通信：
+
+- 连接时发送 `connect` 方法进行握手
+- 支持设备身份验证 (`device-auth`) 和令牌认证
+- 实时事件通过 `event` 类型帧接收
+- 请求/响应对应 `req` / `res` 类型帧
+
+## 测试
+
+- 测试文件使用 `*.test.ts` 后缀，与源文件并置
+- 使用 Vitest + Playwright 进行浏览器测试
+- 配置在 `vitest.config.ts`
+- 支持单元测试和浏览器集成测试
+
+## 构建输出
+
+- 生产构建输出到 `../dist/control-ui/`
+- 开发服务器运行在 `http://localhost:5173`
+- 支持基础路径配置 (通过 `OPENCLAW_CONTROL_UI_BASE_PATH` 环境变量)
+
+## 重要注意事项
+
+- **始终使用 `pnpm` 而非 `npm`** (项目要求)
+- TypeScript 源文件和编译后的 JS 文件并存 (用于兼容性)
+- 遵循现有命名约定：Pascal Case 用于类，camel Case 用于函数
+- 编辑应用状态时，始终使用控制器函数而非直接修改
+- CSS 样式不使用预处理器，使用原生 CSS 变量和层叠
