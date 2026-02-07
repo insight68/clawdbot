@@ -90,6 +90,11 @@ import { renderSessions } from "./views/sessions";
 import { renderSkills } from "./views/skills";
 import "./views/home";
 import "./views/marketing";
+import "./views/data-processing";
+import "./views/customer-service";
+import "./views/brand-management";
+import "./views/sentiment-monitor";
+import "./views/market-analysis";
 
 const AVATAR_DATA_RE = /^data:/i;
 const AVATAR_HTTP_RE = /^https?:\/\//i;

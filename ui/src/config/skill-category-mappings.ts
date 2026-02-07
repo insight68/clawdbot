@@ -11,11 +11,12 @@ import type { SkillStatusEntry } from "../ui/types";
 export type SkillJobCategory =
   | "marketing" // 营销
   | "service" // 客服
+  | "legal" // 法律
   | "brand" // 品牌
   | "data" // 数据
-  | "admin" // 行政
+  | "efficiency" // 效率工具
   | "dev" // 开发
-  | "communication" // 通讯
+  | "communication" // 交流
   | "media" // 媒体
   | "tools" // 工具
   | "other"; // 其他
@@ -28,13 +29,14 @@ export interface JobCategoryInfo {
   description: string;
 }
 
-// 所有职业类别信息
+// 所有分类，适合中国用户
 export const JOB_CATEGORIES: JobCategoryInfo[] = [
   { id: "marketing", name: "营销", emoji: "📢", description: "营销活动、内容生成、广告投放" },
+  { id: "legal", name: "法律", emoji: "📢", description: "合同审阅、制定" },
   { id: "service", name: "客服", emoji: "💬", description: "客户支持、售后处理" },
   { id: "brand", name: "品牌", emoji: "✨", description: "品牌形象、声誉管理" },
   { id: "data", name: "数据", emoji: "📊", description: "数据分析、报表生成" },
-  { id: "admin", name: "行政", emoji: "📋", description: "办公自动化、文档处理" },
+  { id: "efficiency", name: "效率工具", emoji: "📋", description: "办公自动化、文档处理" },
   { id: "dev", name: "开发", emoji: "💻", description: "代码开发、技术工具" },
   { id: "communication", name: "通讯", emoji: "📱", description: "即时通讯、消息发送" },
   { id: "media", name: "媒体", emoji: "🎬", description: "音视频处理、图像编辑" },
@@ -48,6 +50,7 @@ export interface SkillCategoryMapping {
   category: SkillJobCategory;
   icon?: string;
   displayName?: string;
+  description?: string;
 }
 
 // 完整映射表（按类别分组）
@@ -76,7 +79,8 @@ export const SKILL_JOB_CATEGORY_MAPPINGS: SkillCategoryMapping[] = [
     skillName: "competitor-alternatives",
     category: "marketing",
     icon: "🔄",
-    displayName: "竞品对比",
+    displayName: "SEO落地页面",
+    description:'当用户需要为搜索引擎优化（SEO）和销售赋能创作竞品对比页或替代产品页时，启用此技能',
   },
   { skillName: "referral-program", category: "marketing", icon: "👥", displayName: "推荐计划" },
   {
@@ -110,6 +114,10 @@ export const SKILL_JOB_CATEGORY_MAPPINGS: SkillCategoryMapping[] = [
   },
   { skillName: "ab-test-setup", category: "marketing", icon: "🧪", displayName: "A/B测试" },
 
+  // 法务合同
+  { skillName: "compliance", category: "legal", icon: "⚖️", displayName: "合规审核", description: "合规适用《通用数据保护条例》（GDPR）、《加州消费者隐私法案》（CCPA）等隐私法规，审核数据处理协议（DPA），并处理数据主体相关请求。" },
+  { skillName: "contract-review", category: "legal", icon: "⚖️", displayName: "合同审核", description: "审核合同" },
+ 
   // 客服 (3)
   { skillName: "imsg", category: "service", icon: "💬", displayName: "iMessage客服" },
   { skillName: "wacli", category: "service", icon: "📱", displayName: "WhatsApp客服" },
@@ -126,21 +134,17 @@ export const SKILL_JOB_CATEGORY_MAPPINGS: SkillCategoryMapping[] = [
   { skillName: "model-usage", category: "data", icon: "💸", displayName: "成本追踪" },
   { skillName: "ultimapper", category: "data", icon: "🗺️", displayName: "数据可视化" },
 
-  // 行政 (10)
-  { skillName: "apple-notes", category: "admin", icon: "📝", displayName: "Apple笔记" },
-  { skillName: "bear-notes", category: "admin", icon: "🐻", displayName: "Bear笔记" },
-  { skillName: "notion", category: "admin", icon: "📔", displayName: "Notion" },
-  { skillName: "obsidian", category: "admin", icon: "💎", displayName: "Obsidian" },
-  { skillName: "apple-reminders", category: "admin", icon: "⏰", displayName: "提醒事项" },
-  { skillName: "things-mac", category: "admin", icon: "✅", displayName: "Things任务" },
-  { skillName: "trello", category: "admin", icon: "📋", displayName: "Trello看板" },
-  { skillName: "himalaya", category: "admin", icon: "📧", displayName: "邮件CLI" },
-  { skillName: "nano-pdf", category: "admin", icon: "📄", displayName: "PDF编辑" },
-  { skillName: "1password", category: "admin", icon: "🔐", displayName: "密码管理" },
+  // 效率工具
+  { skillName: "apple-notes", category: "efficiency", icon: "📝", displayName: "Apple笔记" },
+  { skillName: "notion", category: "efficiency", icon: "📔", displayName: "Notion" },
+  { skillName: "apple-reminders", category: "efficiency", icon: "⏰", displayName: "提醒事项" },
+  { skillName: "things-mac", category: "efficiency", icon: "✅", displayName: "Things任务" },
+  { skillName: "trello", category: "efficiency", icon: "📋", displayName: "Trello看板" },
+  { skillName: "himalaya", category: "efficiency", icon: "📧", displayName: "邮件CLI" },
+  { skillName: "nano-pdf", category: "efficiency", icon: "📄", displayName: "PDF编辑" },
 
   // 开发 (15)
   { skillName: "github", category: "dev", icon: "🐙", displayName: "GitHub" },
-  { skillName: "clawhub", category: "dev", icon: "🤖", displayName: "ClawHub" },
   { skillName: "coding-agent", category: "dev", icon: "💻", displayName: "AI编程助手" },
   { skillName: "openai-whisper", category: "dev", icon: "🎙️", displayName: "Whisper本地" },
   { skillName: "openai-whisper-api", category: "dev", icon: "☁️", displayName: "Whisper API" },
@@ -216,8 +220,22 @@ export function getCategoryInfo(category: SkillJobCategory): JobCategoryInfo | u
 
 // ========== 辅助函数：与真实技能数据关联 ==========
 
-// 导入视觉样式和交互类型（复用 skill-mappings.ts 中的类型）
-import type { SkillVisualStyle, SkillInteraction } from "./skill-mappings";
+// 视觉样式配置
+export type SkillVisualStyle = {
+  variant: "primary" | "secondary" | "accent" | "subtle";
+  icon: string;
+  size: "large" | "medium" | "small";
+  featured: boolean;
+};
+
+// 点击交互配置
+export type SkillInteraction = {
+  type: "prompt" | "tool" | "link" | "modal";
+  prompt?: string;
+  toolParams?: Record<string, unknown>;
+  link?: string;
+  modal?: string;
+};
 
 // 技能映射条目（用于视图渲染）
 export interface ViewSkillMapping {

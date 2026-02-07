@@ -203,7 +203,7 @@ export function titleForTab(tab: Tab) {
       return "AI助理";
     // AI助手子页面
     case "marketing":
-      return "营销";
+      return "广告营销";
     case "data-processing":
       return "数据处理";
     case "market-analysis":
