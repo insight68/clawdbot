@@ -10,8 +10,10 @@ import type { SkillStatusEntry } from "../ui/types";
 // 职业类别定义
 export type SkillJobCategory =
   | "marketing" // 营销
+  | "product" // 产品
   | "service" // 客服
   | "legal" // 法律
+  | "finance" // 财务
   | "brand" // 品牌
   | "data" // 数据
   | "efficiency" // 效率工具
@@ -32,7 +34,9 @@ export interface JobCategoryInfo {
 // 所有分类，适合中国用户
 export const JOB_CATEGORIES: JobCategoryInfo[] = [
   { id: "marketing", name: "营销", emoji: "📢", description: "营销活动、内容生成、广告投放" },
+  { id: "product", name: "产品", emoji: "🎯", description: "产品规划、需求管理、用户研究" },
   { id: "legal", name: "法律", emoji: "⚖️", description: "合同审阅、合规审核、法律风险评估" },
+  { id: "finance", name: "财务", emoji: "💰", description: "财务报表、对账核销、预算分析" },
   { id: "service", name: "客服", emoji: "💬", description: "客户支持、售后处理" },
   { id: "brand", name: "品牌", emoji: "✨", description: "品牌形象、声誉管理" },
   { id: "data", name: "数据", emoji: "📊", description: "数据分析、报表生成" },
@@ -83,6 +87,14 @@ export const SKILL_JOB_CATEGORY_MAPPINGS: SkillCategoryMapping[] = [
   { skillName: "marketing-psychology", category: "marketing", icon: "🧠", displayName: "营销心理学", description: "应用70+心理学原理和行为科学优化营销" },
   { skillName: "ab-test-setup", category: "marketing", icon: "🧪", displayName: "A/B测试", description: "设计和规划A/B测试、多变量实验方案" },
 
+  // ==================== 产品管理 (6) ====================
+  { skillName: "feature-spec", category: "product", icon: "📝", displayName: "产品需求", description: "撰写PRD文档，定义问题陈述、用户故事和验收标准" },
+  { skillName: "roadmap-management", category: "product", icon: "🗺️", displayName: "路线规划", description: "使用RICE/MoSCoW框架规划产品路线图和优先级" },
+  { skillName: "user-research-synthesis", category: "product", icon: "🔬", displayName: "用研综合", description: "分析用户访谈、问卷和行为数据，提炼洞察和机会点" },
+  { skillName: "competitive-analysis", category: "product", icon: "🔍", displayName: "竞品分析", description: "制作竞品对比矩阵、定位分析和战略建议" },
+  { skillName: "metrics-tracking", category: "product", icon: "📊", displayName: "指标追踪", description: "设定OKR、搭建数据看板、执行周度指标复盘" },
+  { skillName: "stakeholder-comms", category: "product", icon: "📣", displayName: "干系人沟通", description: "撰写项目周报、风险通报和决策文档，适配不同受众" },
+
   // ==================== 法务合同 (6) ====================
   { skillName: "compliance", category: "legal", icon: "⚖️", displayName: "合规审核", description: "审核GDPR、CCPA等隐私法规合规性，处理数据主体请求" },
   { skillName: "contract-review", category: "legal", icon: "📜", displayName: "合同审核", description: "根据企业谈判手册审核合同条款，生成修改建议" },
@@ -90,6 +102,14 @@ export const SKILL_JOB_CATEGORY_MAPPINGS: SkillCategoryMapping[] = [
   { skillName: "nda-triage", category: "legal", icon: "🔒", displayName: "NDA分级审查", description: "快速筛选NDA，分类为标准/需审/风险三级" },
   { skillName: "canned-responses", category: "legal", icon: "📋", displayName: "法务模板回复", description: "为常见法律咨询生成标准化回复模板" },
   { skillName: "meeting-briefing", category: "legal", icon: "📑", displayName: "会议简报", description: "准备法务相关会议材料，追踪行动项" },
+
+  // ==================== 财务会计 (6) ====================
+  { skillName: "financial-statements", category: "finance", icon: "📊", displayName: "财务报表", description: "生成利润表、资产负债表和现金流量表，支持同比分析" },
+  { skillName: "journal-entry-prep", category: "finance", icon: "📝", displayName: "凭证录入", description: "准备月末结账分录，包括应计、摊销、折旧等" },
+  { skillName: "reconciliation", category: "finance", icon: "🔍", displayName: "账务核对", description: "核对总账与明细账、银行对账、公司间往来核销" },
+  { skillName: "variance-analysis", category: "finance", icon: "📈", displayName: "差异分析", description: "分解财务差异驱动因素，生成瀑布图和解释说明" },
+  { skillName: "close-management", category: "finance", icon: "📅", displayName: "结账管理", description: "管理月末结账流程、任务排期和进度追踪" },
+  { skillName: "audit-support", category: "finance", icon: "🔒", displayName: "审计支持", description: "支持SOX 404合规控制测试、样本选取和工作底稿" },
 
   // ==================== 客服 (3) ====================
   { skillName: "imsg", category: "service", icon: "💬", displayName: "iMessage客服", description: "通过iMessage/SMS处理客户咨询和支持" },

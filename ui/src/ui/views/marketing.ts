@@ -8,10 +8,9 @@ import type { SkillJobCategory } from "../../config/skill-category-mappings";
  */
 const MARKETING_CATEGORY_RULES = [
   { id: "strategy", label: "营销策略", keywords: ["strategy", "launch", "pricing", "referral", "free-tool", "idea", "psychology"] },
-  { id: "content", label: "内容创作", keywords: ["content", "copy", "writing", "editing"] },
-  { id: "social", label: "社交媒体", keywords: ["social", "instagram", "linkedin", "tiktok"] },
-  { id: "email", label: "邮件营销", keywords: ["email"] },
-  { id: "seo", label: "SEO优化", keywords: ["seo", "schema", "keyword"] },
+  { id: "content", label: "内容创作", keywords: ["product-marketing-context","content", "copy", "writing", "editing"] },
+  { id: "social", label: "社交邮件", keywords: ["social", "instagram", "linkedin", "tiktok","email"] },
+  { id: "seo", label: "SEO优化", keywords: ["seo", "schema", "keyword","competitor-alternatives"] },
   { id: "paid", label: "付费广告", keywords: ["paid", "ads"] },
   { id: "cro", label: "转化优化", keywords: ["cro", "form", "page", "popup", "onboarding", "signup", "paywall"] },
   { id: "analytics", label: "数据分析", keywords: ["analytics", "tracking", "metric"] },

@@ -90,7 +90,9 @@ import { renderSessions } from "./views/sessions";
 import { renderSkills } from "./views/skills";
 import "./views/home";
 import "./views/marketing";
+import "./views/product-management";
 import "./views/legal";
+import "./views/finance";
 import "./views/data-processing";
 import "./views/customer-service";
 import "./views/brand-management";
@@ -602,6 +604,18 @@ export function renderApp(state: AppViewState) {
         }
 
         ${
+          state.tab === "product-management"
+            ? html`
+                <openclaw-view-product-management
+                  .skillsReport=${state.skillsReport}
+                  .chatProps=${chatProps}
+                  .renderChat=${renderChat}
+                ></openclaw-view-product-management>
+              `
+            : nothing
+        }
+
+        ${
           state.tab === "legal"
             ? html`
                 <openclaw-view-legal
@@ -609,6 +623,18 @@ export function renderApp(state: AppViewState) {
                   .chatProps=${chatProps}
                   .renderChat=${renderChat}
                 ></openclaw-view-legal>
+              `
+            : nothing
+        }
+
+        ${
+          state.tab === "finance"
+            ? html`
+                <openclaw-view-finance
+                  .skillsReport=${state.skillsReport}
+                  .chatProps=${chatProps}
+                  .renderChat=${renderChat}
+                ></openclaw-view-finance>
               `
             : nothing
         }
