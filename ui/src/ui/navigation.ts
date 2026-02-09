@@ -31,7 +31,7 @@ export const TAB_GROUPS = [
   },
   {
     label: "配置",
-    tabs: ["config", "channels", "instances", "sessions", "skills", "logs"],
+    tabs: ["config", "channels", "nodes", "instances", "sessions", "skills", "logs"],
     subtabs: true,
     collapsed: true,
   },
@@ -56,6 +56,7 @@ export type Tab =
   | "sentiment-monitor"
   // 保留现有功能
   | "channels"
+  | "nodes"
   | "instances"
   | "sessions"
   | "skills"
@@ -81,6 +82,7 @@ const TAB_PATHS: Record<Tab, string> = {
   "sentiment-monitor": "/sentiment-monitor",
   // 保留现有功能
   channels: "/channels",
+  nodes: "/nodes",
   instances: "/instances",
   sessions: "/sessions",
   skills: "/skills",
@@ -188,6 +190,8 @@ export function iconForTab(tab: Tab): IconName {
     // 保留现有功能
     case "channels":
       return "link";
+    case "nodes":
+      return "monitor";
     case "instances":
       return "radio";
     case "sessions":
@@ -238,6 +242,8 @@ export function titleForTab(tab: Tab) {
     // 保留现有功能
     case "channels":
       return "频道";
+    case "nodes":
+      return "节点管理";
     case "instances":
       return "实例";
     case "sessions":
@@ -288,6 +294,8 @@ export function subtitleForTab(tab: Tab) {
     // 保留现有功能
     case "channels":
       return "管理频道和相关设置";
+    case "nodes":
+      return "设备配对、执行权限和节点绑定管理";
     case "instances":
       return "已连接客户端和节点的状态信标";
     case "sessions":
